@@ -83,7 +83,7 @@ input,select{font-family:inherit;font-size:16px}
 .btn-primary{background:linear-gradient(135deg,#FF6A3D 0,#E3172A 55%,#A80E33 100%);color:#fff;box-shadow:0 14px 30px -10px rgba(255,60,60,.75),inset 0 1px 0 rgba(255,255,255,.35)}
 .btn-teal{background:linear-gradient(135deg,#25C6D2 0,#0F7F86 55%,#0B4E50 100%);color:#fff;box-shadow:0 14px 30px -10px rgba(25,190,200,.65),inset 0 1px 0 rgba(255,255,255,.3)}
 .btn-ghost{background:var(--glass);border:1.5px solid var(--glass-b);color:#fff;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.card .btn-ghost,.tag .btn-ghost{background:#fff;border:2px solid var(--line);color:var(--ink);-webkit-backdrop-filter:none;backdrop-filter:none}
+.card .btn-ghost,.tag .btn-ghost,.modal .btn-ghost,.anti-ov .btn-ghost{background:#fff;border:2px solid var(--line);color:var(--ink);-webkit-backdrop-filter:none;backdrop-filter:none}
 .btn[disabled]{opacity:.45;pointer-events:none}
 .btn-block{width:100%}
 
@@ -381,6 +381,40 @@ td.num{text-align:center;font-weight:800}
 .tabs{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
 .tab{padding:11px 18px;border-radius:14px;font-weight:900;font-size:15px;color:#fff;background:var(--glass);border:1.5px solid var(--glass-b)}
 .tab.on{background:linear-gradient(135deg,#FF6A3D,#D0121B);border-color:transparent;box-shadow:0 10px 24px -10px rgba(255,60,60,.8)}
+/* ---------- v4: two exams, lock, repairs, anti-cheat ---------- */
+.exam-card + .exam-card{margin-top:14px}
+.exam-card.locked{filter:saturate(.55) brightness(.85)}
+.exam-card.locked .ex-go{background:rgba(255,255,255,.18);color:#fff;box-shadow:none;border:1px solid rgba(255,255,255,.35)}
+.exam-card.need .ex-go{background:linear-gradient(135deg,#FFE0A0,#FF5A3C);color:#2B1308}
+.ex-tags span.warn{background:rgba(255,80,80,.35);border-color:rgba(255,160,160,.6)}
+.rp{margin-top:14px;padding:14px 16px;border-radius:16px;font-size:15px;line-height:1.6;text-align:left}
+.rp.ok{background:#E3F6EE;color:#14603F}.rp.bad{background:#FDE7E7;color:#8E0E16}.rp.info{background:#ECEAF6;color:#3B3766}
+.rcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.rc{font-size:12px;font-weight:900;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.7);border:1.5px dashed currentColor;opacity:.75}
+.rc.d{border-style:solid;opacity:1;background:#fff}
+#scrExam{position:relative}
+#scrExam.anti .qcard,#scrExam.anti .palette{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.watermark{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:flex;flex-wrap:wrap;gap:70px 60px;align-content:flex-start;padding:40px;transform:rotate(-18deg) scale(1.3);opacity:.06;font-weight:900;font-size:15px;color:#fff;white-space:nowrap}
+#scrExam:not(.anti) .watermark{display:none}
+#scrExam > *:not(.watermark){position:relative;z-index:1}
+.anti-ov{position:fixed;inset:0;z-index:95;background:rgba(60,4,10,.88);display:grid;place-items:center;padding:16px;animation:fade .2s}
+.anti-ov .box{background:#FFFBF5;color:var(--ink);max-width:440px;width:100%;border-radius:24px;padding:26px;text-align:center;border-top:8px solid var(--red);box-shadow:0 40px 90px -30px #000}
+.modal .note,.anti-ov .note{color:var(--muted)}
+.anti-ov h3{font-size:22px;color:var(--red);margin:6px 0}
+.setcard{background:var(--paper);color:var(--ink);border-radius:18px;padding:16px 18px;margin:0 0 14px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center}
+.setcard .ttl{font-weight:900;font-size:16px;flex:1 1 100%}
+.setcard .it{display:flex;align-items:center;gap:10px;font-weight:800;font-size:14px}
+.setcard input[type=number]{width:72px;padding:8px 10px;border:2px solid var(--line);border-radius:10px;font-weight:900;font-size:16px;text-align:center;-moz-appearance:textfield}
+.setcard input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.sw{position:relative;display:inline-block;width:56px;height:30px;flex:none}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw span{position:absolute;inset:0;border-radius:99px;background:#D8CCC0;transition:background .2s;cursor:pointer}
+.sw span::after{content:"";position:absolute;left:4px;top:4px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .2s}
+.sw input:checked + span{background:#16935F}
+.sw input:checked + span::after{transform:translateX(26px)}
+.sw input:focus-visible + span{outline:3px solid var(--cyan);outline-offset:2px}
+.subtabs{display:flex;gap:8px;margin:0 0 12px;flex-wrap:wrap}
+.subtabs .tab{font-size:14px;padding:9px 14px}
 </style>
 </head>
 <body>
@@ -502,9 +536,10 @@ td.num{text-align:center;font-weight:800}
 
   <!-- =============== SCORE TEST =============== -->
   <section id="scrExam" class="screen hidden">
+    <div class="watermark" id="exWatermark" aria-hidden="true"></div>
     <div class="exam-top">
       <button class="back" id="exBack" aria-label="กลับหน้าเลือกด่าน">←</button>
-      <div class="meta"><div class="s" id="exWho"></div><div class="t">ข้อสอบเก็บคะแนน · ด่าน 1–3</div></div>
+      <div class="meta"><div class="s" id="exWho"></div><div class="t" id="exTitle">ข้อสอบเก็บคะแนน</div></div>
       <div class="chipbox">⏱ <span id="exTime">00:00</span></div>
       <div class="chipbox">✍️ <span id="exAnswered">0</span>/20</div>
     </div>
@@ -515,7 +550,7 @@ td.num{text-align:center;font-weight:800}
   <section id="scrExamResult" class="screen hidden">
     <div class="scorecard">
       <div class="sc-top">
-        <div class="k">HELLO QUEST · SCORE TEST · ด่าน 1–3</div>
+        <div class="k" id="exResK">HELLO QUEST · SCORE TEST</div>
         <div class="t">RESULT</div>
       </div>
       <div class="sc-body" style="text-align:center">
@@ -526,6 +561,7 @@ td.num{text-align:center;font-weight:800}
         <div style="font-size:20px;font-weight:900;margin-top:6px" id="exLevel"></div>
         <div class="brk" id="exParts"></div>
         <div id="exTopics"></div>
+        <div id="exRepair"></div>
         <div class="done-msg" id="exMsg">✅ ส่งข้อสอบเรียบร้อยแล้ว</div>
         <div class="sc-foot"><span id="exTimeRes"></span><span id="exVio"></span><span>By T.OAT</span></div>
       </div>
@@ -569,11 +605,19 @@ td.num{text-align:center;font-weight:800}
     <div class="tbl-wrap"><table><thead><tr id="aHead"></tr></thead><tbody id="aBody"></tbody></table></div>
     </div>
     <div id="admExam" class="hidden">
+    <div class="subtabs" id="xExamTabs"><button class="tab on" data-exam="E1">📝 ชุด ด่าน 1–3</button><button class="tab" data-exam="E2">📝 ชุด ด่าน 4–5</button></div>
+    <div class="setcard">
+      <div class="ttl" id="xSetTitle">ตั้งค่า</div>
+      <label class="it"><span class="sw"><input type="checkbox" id="xOpen"><span></span></span><span>เปิดให้สอบ · <span id="xOpenLbl"></span></span></label>
+      <label class="it"><span class="sw"><input type="checkbox" id="xAnti"><span></span></span><span>🛡️ ระบบป้องกันการทุจริต</span></label>
+      <div class="it">เกณฑ์ผ่าน <input type="number" id="xPass" min="1" max="20" inputmode="numeric"> / 20 <button class="mini-btn" id="xPassSave" style="padding:8px 12px">บันทึก</button></div>
+    </div>
     <div class="stats" id="xStats"></div>
     <div class="toolbar">
       <input id="xSearch" placeholder="🔍 ค้นหาชื่อ / เลขที่" style="flex:1;min-width:180px">
       <select id="xClass"><option value="">ทุกชั้น</option><option>ม.4</option><option>ม.5</option></select>
       <select id="xRoom"><option value="">ทุกห้อง</option></select>
+      <select id="xStatus"><option value="">ทุกสถานะ</option><option>กำลังทำ</option><option>ผ่าน</option><option>ต้องซ่อม</option><option>ซ่อมครบแล้ว</option><option>รีเซ็ตโดยครู</option></select>
       <button class="mini-btn" id="xItems" style="padding:10px 14px">📊 วิเคราะห์รายข้อ</button>
       <button class="mini-btn" id="xCsv" style="padding:10px 14px">⬇ CSV</button>
       <button class="mini-btn" id="xRefresh" style="padding:10px 14px">↻ รีเฟรช</button>
@@ -592,6 +636,9 @@ td.num{text-align:center;font-weight:800}
 </div>
 
 <div id="modalHost"></div>
+<div class="anti-ov hidden" id="antiOverlay" role="alertdialog" aria-labelledby="antiH"><div class="box"><div style="font-size:48px">🚨</div><h3 id="antiH">ตรวจพบการออกจากหน้าสอบ</h3>
+  <p style="font-weight:800">“<span id="antiKind"></span>” · ครั้งที่ <span id="antiCount">1</span></p><p class="note" style="margin-top:6px">ระบบบันทึกเวลาและแจ้งครูแล้ว กรุณาอยู่ในหน้าสอบจนกว่าจะส่งข้อสอบ</p>
+  <button class="btn btn-primary btn-block" id="antiBack" style="margin-top:16px">กลับไปทำข้อสอบ</button></div></div>
 <div id="toast"></div>
 <div class="vio hidden" id="vioPill"></div>
 <canvas id="cv" class="hidden"></canvas>
@@ -842,7 +889,7 @@ async function register(){
   }
   btn.disabled=false; btn.textContent='🚀 เริ่มผจญภัย →';
   save(); renderHub();
-  EXSYNC=false; exSync().then(()=>{ if(S && !$('scrHub').classList.contains('hidden')) exRenderCard(); });
+  EXSYNC={}; exSyncAll();
 }
 
 /* ---------------- Hub ---------------- */
@@ -1096,11 +1143,11 @@ function addViolation(kind){
   toast('⚠️ ตรวจพบการ'+kind+' — ระบบบันทึกไว้แล้ว',2800);
   gasCall({action:'violation',key:S.key,kind,count:S.violations});
 }
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden||!S) return; if(inQuiz()) addViolation('สลับหน้าจอ'); else if(exInExam()) exViolation('สลับหน้าจอ'); });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden && S && inQuiz()) addViolation('สลับหน้าจอ'); });   // ข้อสอบมีระบบกันทุจริตของตัวเอง (ดูส่วน SCORE TEST)
 (function translateGuard(){
   if(typeof MutationObserver==='undefined') return;
   let last=0;
-  new MutationObserver(ms=>{ if(!S) return; const q=inQuiz(), x=!q&&exInExam(); if(!q&&!x) return; if(ms.some(m=>m.type==='characterData')){ const n=Date.now(); if(n-last>5000){ last=n; q?addViolation('ใช้ตัวแปลภาษา'):exViolation('ใช้ตัวแปลภาษา'); } } })
+  new MutationObserver(ms=>{ if(!S) return; const q=inQuiz(), x=!q&&exAntiOn(); if(!q&&!x) return; if(ms.some(m=>m.type==='characterData')){ const n=Date.now(); if(n-last>5000){ last=n; q?addViolation('ใช้ตัวแปลภาษา'):exViolation('ใช้ตัวแปลภาษา'); } } })
     .observe(document.getElementById('app'),{subtree:true,characterData:true});
 })();
 
@@ -1190,8 +1237,10 @@ async function setPin(){
 }
 
 /* =====================================================================
-   SCORE TEST · ข้อสอบเก็บคะแนน (เนื้อหาด่าน 1–3) — การ์ดพิเศษในหน้าเลือกด่าน
-   20 ข้อ · ส่งได้ 1 ครั้ง (ครูรีเซ็ตได้) · บันทึกลงแท็บ ExamResults (Code.gs เดียวกัน)
+   SCORE TEST · ข้อสอบเก็บคะแนน 2 ชุด (การ์ดพิเศษในหน้าเลือกด่าน)
+   E1 = เนื้อหาด่าน 1–3 · E2 = เนื้อหาด่าน 4–5 · ชุดละ 20 ข้อ
+   - ครูเปิด/ปิดการสอบ ตั้งเกณฑ์ผ่าน และเปิด/ปิดระบบกันทุจริตได้ (แท็บข้อสอบในหน้าแอดมิน)
+   - สอบจริงส่งได้ 1 ครั้ง · ไม่ผ่านต้องซ่อม (เกณฑ์ผ่าน − คะแนน) ครั้ง
    ===================================================================== */
 const EX_SHOW_ANSWERS = false;   // true = แสดงเฉลยให้นักเรียนหลังส่ง (ค่าเริ่มต้นปิด กันเฉลยหลุดไปห้องอื่น)
 const EX_TOTAL = 20;
@@ -1201,43 +1250,80 @@ const EX_PARTS = {
   C:{name:'Part C · ลากคำ', short:'ลากคำ', icon:'🧲', max:5},
   D:{name:'Part D · เรียงประโยค', short:'เรียงประโยค', icon:'🧩', max:4}
 };
-const EX_TOPICS = {1:'Subject & Object', 2:'Possessives', 3:'Name & Nickname'};
-const EX_ITEMS = [
+const EX_TOPIC_NAME = {1:'Subject & Object', 2:'Possessives', 3:'Name & Nickname', 4:'Countries & Cities', 5:'Where Are You From?'};
+const EX_TOPIC_COLOR = {1:'#D0121B', 2:'#F39C2B', 3:'#19A9B5', 4:'#0E5C5E', 5:'#4E4A7E'};
+const EXAMS = {
+ E1:{ id:'E1', title:'สอบเก็บคะแนน ด่าน 1–3', range:'1–3', sub:'Subject & Object · Possessives · Name & Nickname', stages:[1,2,3],
+  grad:'linear-gradient(120deg,#26143F 0,#5B2A86 42%,#B8327A 78%,#E8793A 105%)', items:[
   {id:'A1', part:'A', st:1, t:'mc', q:'Mr. Somchai teaches ___ English every Monday.', h:'คุณสมชายสอนภาษาอังกฤษพวกเราทุกวันจันทร์', o:['us','we','our','ours']},
   {id:'A2', part:'A', st:1, t:'mc', q:'Lisa and Rose are my cousins. ___ live in Phuket.', o:['They','Them','Their','Theirs']},
   {id:'A3', part:'A', st:2, t:'mc', q:"This notebook isn't Ben's. It's ___.", h:'สมุดเล่มนี้ไม่ใช่ของเบน มันเป็นของฉัน', o:['mine','my','me','I']},
   {id:'A4', part:'A', st:3, t:'mc', q:'Her name is Victoria, but you can call ___ Vic.', o:['her','she','hers','his']},
   {id:'A5', part:'A', st:3, t:'mc', q:'“เขาชื่อแจคสัน แต่คุณจะเรียกเขาว่าแจ็คก็ได้” ข้อใดถูกต้อง', o:['His name is Jackson, but you can call him Jack.','He name is Jackson, but you can call his Jack.','His name is Jackson, but you can call he Jack.','Him name is Jackson, but you can call him Jack.']},
   {id:'A6', part:'A', st:2, t:'mc', q:'The bird is building ___ nest.', h:'นกกำลังสร้างรังของมัน', o:['its',"it's",'it','their']},
-
   {id:'B1', part:'B', st:1, t:'fill', q:'Please wait for ___ .', h:'พวกเรา', a:['us']},
   {id:'B2', part:'B', st:1, t:'fill', q:'___ are my best friends.', h:'พวกเขา', a:['they']},
   {id:'B3', part:'B', st:2, t:'fill', q:'That blue bike is ___ .', h:'ของเธอ (ผู้หญิง) · ไม่มีคำนามตามหลัง', a:['hers']},
   {id:'B4', part:'B', st:3, t:'fill', q:'His name is Edward, but everyone calls ___ Ed.', h:'เขา (ผู้ชาย)', a:['him']},
   {id:'B5', part:'B', st:3, t:'fill', q:'___ name is Isabella, but you can call her Izzy.', h:'ของเธอ (ผู้หญิง)', a:['her']},
-
   {id:'C1', part:'C', st:2, t:'drag', q:"I can't find ___ keys. Are they ___ ?", h:'ฉันหากุญแจของฉันไม่เจอ มันเป็นของคุณหรือเปล่า', a:['my','yours'], bank:['my','mine','your','yours']},
   {id:'C2', part:'C', st:1, t:'drag', q:'___ is from Canada. Do you know ___ ?', h:'เขา (ผู้ชาย) มาจากแคนาดา คุณรู้จักเขาไหม', a:['He','him'], bank:['He','Him','him','his']},
   {id:'C3', part:'C', st:2, t:'drag', q:'This is ___ classroom. The classroom is ___ .', h:'นี่คือห้องเรียนของพวกเรา ห้องเรียนนี้เป็นของพวกเรา', a:['our','ours'], bank:['our','ours','us','we']},
   {id:'C4', part:'C', st:3, t:'drag', q:'My name is Samantha, but you can call ___ ___ .', h:'ฉันชื่อซาแมนธา แต่คุณจะเรียกฉันว่าแซมมีก็ได้', a:['me','Sammy'], bank:['me','I','Sammy','Amy']},
   {id:'C5', part:'C', st:1, t:'drag', q:'Nicole and ___ are classmates. The teacher likes ___ .', h:'นิโคลกับฉันเป็นเพื่อนร่วมชั้น คุณครูชอบพวกเรา', a:['I','us'], bank:['I','me','us','we']},
-
   {id:'D1', part:'D', st:3, t:'order', th:'เธอชื่อวิคตอเรีย แต่คุณจะเรียกหล่อนว่าวิคก็ได้', ans:'Her name is Victoria, but you can call her Vic.', extra:['she']},
   {id:'D2', part:'D', st:2, t:'order', th:'กล่องดินสอนี้ไม่ใช่ของฉัน', ans:'This pencil case is not mine.', extra:['my']},
   {id:'D3', part:'D', st:1, t:'order', th:'พวกเขาไม่รู้จักเขา (ผู้ชาย)', ans:"They don't know him.", extra:['he']},
   {id:'D4', part:'D', st:3, t:'order', th:'เขาชื่อลีโอนาร์ด แต่คุณจะเรียกเขาว่าลีโอก็ได้', ans:'His name is Leonard, but you can call him Leo.', extra:['he']}
-];
-const EX_ITEM = Object.fromEntries(EX_ITEMS.map(it=>[it.id,it]));
+ ]},
+ E2:{ id:'E2', title:'สอบเก็บคะแนน ด่าน 4–5', range:'4–5', sub:'Countries & Cities · Where Are You From?', stages:[4,5],
+  grad:'linear-gradient(120deg,#0B2B3A 0,#0E5C5E 40%,#2A7FA0 72%,#4E4A7E 105%)', items:[
+  {id:'A1', part:'A', st:4, t:'mc', q:'Bangkok, Chiang Mai and Phuket are in ___ .', o:['Thailand','Japan','Italy','Canada']},
+  {id:'A2', part:'A', st:4, t:'mc', q:'Which city is in Spain?', h:'เมืองไหนอยู่ในประเทศสเปน', o:['Madrid','Rome','Paris','Berlin']},
+  {id:'A3', part:'A', st:5, t:'mc', q:'Ken is from Japan. ___ from Tokyo.', h:'เคนมาจากญี่ปุ่น เขามาจากโตเกียว', o:["He's",'His','He','Him']},
+  {id:'A4', part:'A', st:5, t:'mc', q:'A: Where are Tom and Jerry from?  B: ___', o:["They're from London.",'They from London.','Their from London.',"They's from London."]},
+  {id:'A5', part:'A', st:5, t:'mc', q:'We ___ from Chiang Mai, but we live in Bangkok now.', o:['are','is','am','be']},
+  {id:'A6', part:'A', st:4, t:'mc', q:'ข้อใดสะกดถูกต้องทุกคำ', o:['Germany · France · Italy','Germeny · France · Italy','Germany · Frence · Italy','Germany · France · Itary']},
+  {id:'B1', part:'B', st:4, t:'fill', q:'Berlin is in ___ .', h:'ประเทศเยอรมนี', a:['Germany']},
+  {id:'B2', part:'B', st:4, t:'fill', q:'Moscow is in ___ .', h:'ประเทศรัสเซีย', a:['Russia']},
+  {id:'B3', part:'B', st:5, t:'fill', q:'Where ___ you from?', h:'คุณมาจากไหน', a:['are']},
+  {id:'B4', part:'B', st:5, t:'fill', q:'Rick ___ from Rome.', h:'ริคมาจากโรม', a:['is']},
+  {id:'B5', part:'B', st:4, t:'fill', q:'Ottawa is a city in ___ .', h:'ประเทศแคนาดา', a:['Canada']},
+  {id:'C1', part:'C', st:5, t:'drag', q:'Amy ___ from England. Her friends ___ from Australia.', h:'เอมีมาจากอังกฤษ เพื่อน ๆ ของเธอมาจากออสเตรเลีย', a:['is','are'], bank:['is','are','am','be']},
+  {id:'C2', part:'C', st:4, t:'drag', q:'Beijing is in ___ , and Seoul is in ___ .', h:'ปักกิ่งอยู่ในจีน และโซลอยู่ในเกาหลีใต้', a:['China','South Korea'], bank:['China','South Korea','Japan','Thailand']},
+  {id:'C3', part:'C', st:5, t:'drag', q:'A: Where ___ Ed from?  B: ___ from Canada.', h:'เอ็ดมาจากไหน — เขามาจากแคนาดา', a:['is',"He's"], bank:['is','are',"He's",'His']},
+  {id:'C4', part:'C', st:5, t:'drag', q:'My friends and I ___ from Pattaya. ___ from Thailand.', h:'ฉันกับเพื่อน ๆ มาจากพัทยา พวกเรามาจากประเทศไทย', a:['are',"We're"], bank:['are','is',"We're",'Our']},
+  {id:'C5', part:'C', st:4, t:'drag', q:'London is in ___ , and New York City is in ___ .', h:'ลอนดอนอยู่ในอังกฤษ และนิวยอร์กอยู่ในสหรัฐอเมริกา', a:['England','the USA'], bank:['England','the USA','France','Canada']},
+  {id:'D1', part:'D', st:5, t:'order', th:'เขามาจากเชียงใหม่', ans:"He's from Chiang Mai.", extra:['his']},
+  {id:'D2', part:'D', st:5, t:'order', th:'พวกเราไม่ได้มาจากญี่ปุ่น', ans:"We're not from Japan.", extra:['our']},
+  {id:'D3', part:'D', st:5, t:'order', th:'คุณมาจากไหน', ans:'Where are you from?', extra:['is']},
+  {id:'D4', part:'D', st:4, t:'order', th:'มาเรียมาจากมาดริด ประเทศสเปน', ans:'Maria is from Madrid, Spain.', extra:['are']}
+ ]}
+};
+Object.values(EXAMS).forEach(X=>{ X.ITEM=Object.fromEntries(X.items.map(it=>[it.id,it])); });
+const EX_IDS = Object.keys(EXAMS);
+let EXS = {E1:{open:true,pass:13,anti:true}, E2:{open:false,pass:13,anti:true}};   // settings (from server)
+let EXSET_OK=false, EXSYNC={}, CUR=null, exTickT=null, exProgT=null;
 const exNormAns = s => norm(s==null?'':s).toLowerCase().replace(/^[\s"“”]+|[\s.,!?"“”]+$/g,'');
 const exMmss = s => { s=Math.max(0,Math.round(s||0)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); };
-let EXSYNC=false, exTickT=null, exProgT=null;
+const EX_SUBMITTED = ['ส่งแล้ว','ผ่าน','ต้องซ่อม','ซ่อมครบแล้ว'];
 
-function exPlan(key){
-  const plan=[];
+/* ---------------- settings ---------------- */
+function exLocalSettings(){ const v=store(APP_ID+':exset'); if(v) EX_IDS.forEach(k=>{ if(v[k]) EXS[k]=Object.assign({},EXS[k],v[k]); }); }
+async function exLoadSettings(timeoutMs){
+  if(!GAS_URL){ exLocalSettings(); EXSET_OK=true; return true; }
+  const r=await gasCall({action:'exam_settings'},timeoutMs||8000);
+  if(r&&r.ok&&r.settings){ EX_IDS.forEach(k=>{ if(r.settings[k]) EXS[k]=r.settings[k]; }); EXSET_OK=true; return true; }
+  return false;
+}
+
+/* ---------------- per-student state ---------------- */
+function exPlan(X,n){
+  const base=S.key+(X.id==='E1'?'':'#'+X.id)+(n?'#r'+n:''), plan=[];
   ['A','B','C','D'].forEach(part=>{
-    const ids=EX_ITEMS.filter(it=>it.part===part).map(it=>it.id);
-    shuffle(ids,rng(hash(key+'#expart'+part))).forEach(id=>{
-      const it=EX_ITEM[id], r=rng(hash(key+'#ex#'+id)), p={id};
+    const ids=X.items.filter(it=>it.part===part).map(it=>it.id);
+    shuffle(ids,rng(hash(base+'#expart'+part))).forEach(id=>{
+      const it=X.ITEM[id], r=rng(hash(base+'#ex#'+id)), p={id};
       if(it.t==='mc') p.opts=shuffle(it.o.map((_,k)=>k),r);
       if(it.t==='drag') p.bank=shuffle(it.bank.map((_,k)=>k),r);
       if(it.t==='order'){ const tk=tokens(it.ans).concat(it.extra); let o=shuffle(tk.map((_,k)=>k),r);
@@ -1249,126 +1335,211 @@ function exPlan(key){
   return plan;
 }
 function exBlank(it){ return it.t==='mc'?null : it.t==='fill'?'' : it.t==='drag'? it.a.map(()=>null) : []; }
-function exFresh(gen){ return {gen:gen||0, plan:exPlan(S.key), answers:Object.fromEntries(EX_ITEMS.map(it=>[it.id,exBlank(it)])), idx:0, started:null, submitted:false, result:null, violations:0}; }
-function exEnsure(){ if(!S.exam || !S.exam.plan) S.exam=exFresh(0); return S.exam; }
-function exAnswered(id,E){ E=E||S.exam; const it=EX_ITEM[id], a=E.answers[id];
+function exNewRun(X,n){ return {n, plan:exPlan(X,n), answers:Object.fromEntries(X.items.map(it=>[it.id,exBlank(it)])), idx:0, started:Date.now()}; }
+function exFresh(gen){ return {gen:gen||0, run:null, main:null, repairs:[], required:0, violations:0}; }
+function exState(id){
+  S.exams=S.exams||{};
+  if(S.exam && !S.exams.E1){                       // ย้ายข้อมูลจากรุ่นก่อน (สอบชุดเดียว)
+    const o=S.exam, e=exFresh(o.gen);
+    if(o.submitted&&o.result) e.main=o.result; else if(o.started) e.run={n:0,plan:o.plan,answers:o.answers,idx:o.idx||0,started:o.started};
+    e.violations=o.violations||0; S.exams.E1=e;
+  }
+  delete S.exam;
+  if(!S.exams[id]) S.exams[id]=exFresh(0);
+  return S.exams[id];
+}
+function exRepairLeft(E){ return E.main ? Math.max(0,(E.required||0)-E.repairs.length) : 0; }
+function exStatus(E){
+  if(!E.main) return E.run? 'doing' : 'new';
+  if(!E.required) return 'pass';
+  return exRepairLeft(E)>0 ? 'repair' : 'repaired';
+}
+
+/* ---------------- answers & grading (for the current run) ---------------- */
+function exAnswered(X,run,id){ const it=X.ITEM[id], a=run.answers[id];
   if(it.t==='mc') return a!==null && a!==undefined;
   if(it.t==='fill') return !!exNormAns(a);
   if(it.t==='drag') return Array.isArray(a) && a.every(x=>x!==null && x!==undefined);
   return Array.isArray(a) && a.length>0; }
-function exCount(E){ E=E||S.exam; return EX_ITEMS.filter(it=>exAnswered(it.id,E)).length; }
-function exGiven(id){ const E=S.exam, it=EX_ITEM[id], a=E.answers[id], p=E.plan.find(x=>x.id===id);
+function exCount(X,run){ return X.items.filter(it=>exAnswered(X,run,it.id)).length; }
+function exGiven(X,run,id){ const it=X.ITEM[id], a=run.answers[id], p=run.plan.find(x=>x.id===id);
   if(it.t==='mc') return a==null?'':it.o[a];
   if(it.t==='fill') return norm(a||'');
   if(it.t==='drag') return (a||[]).map(k=>k==null?'___':it.bank[k]).join(' / ');
   return (a||[]).map(k=>p.tiles[k]).join(' '); }
-function exCorrectText(id){ const it=EX_ITEM[id]; return it.t==='mc'?it.o[0]:it.t==='fill'?it.a[0]:it.t==='drag'?it.a.join(' / '):it.ans; }
-function exIsCorrect(id){ const it=EX_ITEM[id], a=S.exam.answers[id];
-  if(!exAnswered(id)) return false;
+function exCorrectText(X,id){ const it=X.ITEM[id]; return it.t==='mc'?it.o[0]:it.t==='fill'?it.a[0]:it.t==='drag'?it.a.join(' / '):it.ans; }
+function exIsCorrect(X,run,id){ const it=X.ITEM[id], a=run.answers[id];
+  if(!exAnswered(X,run,id)) return false;
   if(it.t==='mc') return a===0;
   if(it.t==='fill') return it.a.some(x=>exNormAns(x)===exNormAns(a));
   if(it.t==='drag') return a.every((k,i)=>it.bank[k]===it.a[i]);
-  return norm(exGiven(id))===norm(it.ans); }
-function exGrade(){
-  const parts={A:0,B:0,C:0,D:0}, topics={1:[0,0],2:[0,0],3:[0,0]}, detail=[];
-  EX_ITEMS.forEach(it=>{ const ok=exIsCorrect(it.id); if(ok){parts[it.part]++;topics[it.st][0]++;} topics[it.st][1]++; detail.push({id:it.id,ok:ok?1:0,g:exGiven(it.id)}); });
+  return norm(exGiven(X,run,id))===norm(it.ans); }
+function exGrade(X,run){
+  const parts={A:0,B:0,C:0,D:0}, topics={}, detail=[];
+  X.stages.forEach(s=>topics[s]=[0,0]);
+  X.items.forEach(it=>{ const ok=exIsCorrect(X,run,it.id); if(ok){parts[it.part]++;topics[it.st][0]++;} topics[it.st][1]++; detail.push({id:it.id,ok:ok?1:0,g:exGiven(X,run,it.id)}); });
   return {score:parts.A+parts.B+parts.C+parts.D,parts,topics,detail};
 }
 
-/* ---- server sync (called after login and before opening the exam) ---- */
-async function exSync(timeoutMs){
-  if(!S) return; const E=exEnsure();
-  if(!GAS_URL){ EXSYNC=true; return; }
+/* ---------------- server sync ---------------- */
+async function exSync(id,timeoutMs){
+  if(!S) return; const X=EXAMS[id]; exState(id);
+  if(!GAS_URL){ EXSYNC[id]=true; return; }
   const st=S.student;
-  const res=await gasCall({action:'exam_login',key:S.key,first:st.first,last:st.last,cls:st.cls,room:st.room,no:st.no},timeoutMs||12000);
+  const res=await gasCall({action:'exam_login',exam:id,key:S.key,first:st.first,last:st.last,cls:st.cls,room:st.room,no:st.no},timeoutMs||12000);
   if(!(res&&res.ok)) return;
-  EXSYNC=true;
+  EXSYNC[id]=true;
   const gen=Number(res.gen)||0;
-  if(gen>(Number(E.gen)||0)) S.exam=exFresh(gen);                 // ครูกดรีเซ็ตข้อสอบ
-  const X=S.exam;
-  if(res.status==='ส่งแล้ว'){
-    if(!X.submitted||!X.result){ X.submitted=true; X.result={score:Number(res.score)||0,parts:res.parts||{},topics:null,fromServer:true,time:res.submitted||''}; }
-  } else if(X.submitted && X.result && !X.result.fromServer){ exSend(); }  // ส่งตอนออฟไลน์ → ส่งซ้ำ
+  if(gen>(Number(S.exams[id].gen)||0)) S.exams[id]=exFresh(gen);          // ครูกดรีเซ็ต
+  const E=S.exams[id];
+  if(EX_SUBMITTED.includes(res.status)){
+    if(!E.main){ E.main={score:Number(res.score)||0,parts:res.parts||{},topics:null,fromServer:true,synced:true,time:res.submitted||''}; E.run=null; }
+    else { E.main.synced=true; if(Number(res.score)!==E.main.score && res.score!==''){ E.main.score=Number(res.score); E.main.parts=res.parts||E.main.parts; E.main.topics=null; E.main.note='คะแนนที่บันทึกในระบบ (ส่งไว้ก่อนหน้า)'; } }
+    E.required=Number(res.repairs)||0;
+    const srvScores=String(res.repairScores||'').split(',').filter(x=>x!=='').map(Number);
+    while(E.repairs.length<srvScores.length){ E.repairs.push({score:srvScores[E.repairs.length],fromServer:true,synced:true}); }
+    E.repairs.forEach((r,i)=>{ if(i<srvScores.length) r.synced=true; });
+    if(E.run && E.run.n>0 && E.run.n<=srvScores.length) E.run=null;          // ซ่อมครั้งนั้นถูกส่งจากเครื่องอื่นแล้ว
+  }
+  exResend(id);
   save();
 }
+function exResend(id){
+  const E=S.exams[id]; if(!E) return;
+  if(E.main && !E.main.synced && !E.main.fromServer) exSendMain(id);
+  E.repairs.forEach((r,i)=>{ if(!r.synced) exSendRepair(id,i+1); });
+}
+function exSendMain(id){
+  const E=S.exams[id], R=E.main, st=S.student; if(!R) return Promise.resolve();
+  return gasCall({action:'exam_submit',exam:id,key:S.key,first:st.first,last:st.last,cls:st.cls,room:st.room,no:st.no,score:R.score,parts:R.parts,answered:R.answered||0,secs:R.secs,answers:JSON.stringify(R.detail||[])})
+    .then(r=>{ if(!GAS_URL) return;
+      if(r&&r.ok){ R.synced=true;
+        if(r.already && r.score!==undefined && r.score!=='' && Number(r.score)!==R.score){ R.score=Number(r.score); R.parts=r.parts||R.parts; R.topics=null; R.note='คะแนนที่บันทึกในระบบ (ส่งไว้ก่อนหน้า)'; }
+        if(r.repairs!==undefined) E.required=Number(r.repairs)||0;
+        save(); exRefreshView(id); }
+      else toast('⚠️ ส่งคะแนนเข้าระบบไม่สำเร็จ — กรุณาแคปผลสอบส่งครู แล้วเข้าสู่ระบบใหม่เมื่อมีเน็ต',4500); });
+}
+function exSendRepair(id,n){
+  const E=S.exams[id], R=E.repairs[n-1]; if(!R||R.synced) return Promise.resolve();
+  return gasCall({action:'exam_repair',exam:id,key:S.key,n,score:R.score,secs:R.secs||0})
+    .then(r=>{ if(!GAS_URL) return;
+      if(r&&r.ok){ R.synced=true; if(r.repairs!==undefined) E.required=Number(r.repairs)||E.required; save(); exRefreshView(id); }
+      else if(r&&r.error==='order'){ EXSYNC[id]=false; }
+      else toast('⚠️ ส่งผลการซ่อมไม่สำเร็จ — ระบบจะส่งใหม่อัตโนมัติเมื่อเข้าสู่ระบบครั้งหน้า',4000); });
+}
+function exRefreshView(id){
+  if(!$('scrHub').classList.contains('hidden')) exRenderCard();
+  if(!$('scrExamResult').classList.contains('hidden') && CUR && CUR.X.id===id) exShowResult(id);
+}
+async function exSyncAll(){ await exLoadSettings(); await Promise.all(EX_IDS.map(id=>exSync(id))); if(S && !$('scrHub').classList.contains('hidden')) exRenderCard(); }
 
-/* ---- hub card ---- */
+/* ---------------- hub cards ---------------- */
 function exRenderCard(){
   const box=$('examSlot'); if(!box||!S) return;
-  const E=S.exam, sub=E&&E.submitted, n=E?exCount(E):0, started=E&&E.started;
-  const status = sub ? `<div class="ex-res"><b>${E.result.score}</b><span>/20</span></div>` : `<span class="ex-pill">${started?('ตอบแล้ว '+n+'/20'):'20 ข้อ · 20 คะแนน'}</span>`;
-  const go = sub ? '📄 ดูผลสอบ' : started ? 'สอบต่อ →' : '📝 เริ่มสอบ →';
-  box.innerHTML=`<button class="exam-card ${sub?'done':''}" id="btnExamCard">
-    <div class="ex-glow"></div>
-    <div class="ex-l"><div class="ex-k">SCORE TEST · ข้อสอบเก็บคะแนน</div><div class="ex-t">📝 สอบเก็บคะแนน ด่าน 1–3</div>
-      <div class="ex-d">Subject &amp; Object · Possessives · Name &amp; Nickname</div>
-      <div class="ex-tags"><span>เลือกคำตอบ</span><span>เติมคำ</span><span>ลากคำ</span><span>เรียงประโยค</span><span>${sub?'ส่งแล้ว ✓':'ส่งได้ 1 ครั้ง'}</span></div></div>
-    <div class="ex-r">${status}<span class="ex-go">${go}</span></div></button>`;
-  $('btnExamCard').onclick=exOpen;
+  box.innerHTML=EX_IDS.map(id=>{
+    const X=EXAMS[id], E=exState(id), set=EXS[id], stt=exStatus(E), left=exRepairLeft(E), locked=!set.open;
+    let status='', go='', tag='';
+    if(stt==='new'){ status=`<span class="ex-pill">20 ข้อ · ผ่าน ${set.pass}/20</span>`; go='📝 เริ่มสอบ →'; tag='ส่งได้ 1 ครั้ง'; }
+    else if(stt==='doing'){ status=`<span class="ex-pill">ตอบแล้ว ${exCount(X,E.run)}/20</span>`; go='สอบต่อ →'; tag='กำลังสอบ'; }
+    else { status=`<div class="ex-res"><b>${E.main.score}</b><span>/20</span></div>`;
+      if(stt==='pass'){ go='📄 ดูผลสอบ'; tag='ผ่าน ✓'; }
+      else if(stt==='repair'){ go=(E.run&&E.run.n>0)?`🛠 ซ่อมต่อ (ครั้งที่ ${E.run.n})`:`🛠 ซ่อมครั้งที่ ${E.repairs.length+1}`; tag=`ไม่ผ่าน · ต้องซ่อมอีก ${left} ครั้ง`; }
+      else { go='📄 ดูผลสอบ'; tag='ซ่อมครบแล้ว ✓'; } }
+    if(locked && (stt==='new'||stt==='doing'||stt==='repair')) go='🔒 ยังไม่เปิดสอบ';
+    return `<button class="exam-card ${stt==='pass'||stt==='repaired'?'done':''} ${stt==='repair'?'need':''} ${locked?'locked':''}" data-exam="${id}" style="background:${X.grad}">
+      <div class="ex-glow"></div>
+      <div class="ex-l"><div class="ex-k">SCORE TEST · ข้อสอบเก็บคะแนน</div><div class="ex-t">📝 ${esc(X.title)}</div>
+        <div class="ex-d">${esc(X.sub)}</div>
+        <div class="ex-tags"><span>เลือกคำตอบ</span><span>เติมคำ</span><span>ลากคำ</span><span>เรียงประโยค</span><span class="${stt==='repair'?'warn':''}">${tag}</span></div></div>
+      <div class="ex-r">${status}<span class="ex-go">${go}</span></div></button>`;
+  }).join('');
+  box.querySelectorAll('.exam-card').forEach(b=>b.onclick=()=>exOpen(b.dataset.exam,b));
 }
-async function exOpen(){
-  const btn=$('btnExamCard'); if(btn){ if(btn.disabled) return; btn.disabled=true; }
-  exEnsure();
-  if(!EXSYNC){ const g=btn&&btn.querySelector('.ex-go'); if(g) g.textContent='กำลังเชื่อมต่อ…'; await exSync(8000); }
+async function exOpen(id,btn){
+  if(btn){ if(btn.disabled) return; btn.disabled=true; const g=btn.querySelector('.ex-go'); if(g) g.textContent='กำลังเชื่อมต่อ…'; }
+  const X=EXAMS[id]; exState(id);
+  await exLoadSettings(8000);
+  if(!EXSYNC[id]) await exSync(id,8000);
   if(btn) btn.disabled=false;
-  const E=S.exam;
-  if(E.submitted) return exShowResult();
-  if(!E.started){
-    return exConfirm(`<div style="font-size:44px">📝</div><h3>พร้อมสอบเก็บคะแนนไหม?</h3>
-      <p class="note" style="font-size:15px">20 ข้อ · 4 ส่วน (เลือกคำตอบ · เติมคำ · ลากคำ · เรียงประโยค)</p>
-      <p class="note" style="margin-top:6px">ย้อนแก้คำตอบได้ก่อนกดส่ง · <b>ส่งได้ครั้งเดียว</b> · ห้ามสลับหน้าจอ</p>
-      <div class="acts"><button class="btn btn-ghost" id="mBack">ยังก่อน</button><button class="btn btn-primary" id="mOk">เริ่มสอบเลย</button></div>`,
-      ()=>{ E.started=Date.now(); save(); const st=S.student;
-        gasCall({action:'exam_login',create:true,key:S.key,first:st.first,last:st.last,cls:st.cls,room:st.room,no:st.no}).then(()=>gasCall({action:'exam_progress',key:S.key,answered:exCount()})); exStart(); });
-  }
-  exStart();
+  exRenderCard();                                   // คืนข้อความปุ่ม (เดิมค้างเป็น "กำลังเชื่อมต่อ…")
+  const E=S.exams[id], stt=exStatus(E);
+  CUR={X,E};
+  if(stt==='pass'||stt==='repaired'){ exRenderCard(); return exShowResult(id); }
+  if(!EXS[id].open){ exRenderCard(); if(E.main) return exShowResult(id); return toast('🔒 ครูยังไม่เปิดให้สอบชุดนี้',2600); }
+  if(E.run) return exStart(id);
+  if(stt==='new') return exBegin(id,0);
+  if(stt==='repair') return exShowResult(id);
 }
-function exStart(){
-  const st=S.student, E=S.exam;
+function exBegin(id,n){
+  const X=EXAMS[id], E=S.exams[id], set=EXS[id];
+  const anti=set.anti?'<p class="note" style="margin-top:6px">🛡️ เปิดระบบป้องกันการทุจริต: ห้ามสลับแอป/แท็บ ห้ามคัดลอก-วาง · ทุกครั้งที่ออกจากหน้าสอบจะถูกบันทึกและแจ้งครู</p>':'';
+  const body = n===0
+    ? `<div style="font-size:44px">📝</div><h3>${esc(X.title)}</h3><p class="note" style="font-size:15px">20 ข้อ · 4 ส่วน · เกณฑ์ผ่าน <b>${set.pass}/20</b></p>
+       <p class="note" style="margin-top:6px">ย้อนแก้คำตอบได้ก่อนกดส่ง · <b>ส่งได้ครั้งเดียว</b> · ถ้าไม่ผ่านต้องสอบซ่อม (เกณฑ์ผ่าน − คะแนนที่ได้) ครั้ง</p>${anti}
+       <div class="acts"><button class="btn btn-ghost" id="mBack">ยังก่อน</button><button class="btn btn-primary" id="mOk">เริ่มสอบเลย</button></div>`
+    : `<div style="font-size:44px">🛠</div><h3>สอบซ่อมครั้งที่ ${n} / ${E.required}</h3><p class="note" style="font-size:15px">ทำข้อสอบชุดเดิม 20 ข้อ (สลับลำดับใหม่) ให้ครบแล้วกดส่ง</p>${anti}
+       <div class="acts"><button class="btn btn-ghost" id="mBack">ยังก่อน</button><button class="btn btn-primary" id="mOk">เริ่มซ่อม</button></div>`;
+  exConfirm(body, async ()=>{
+    await exLoadSettings(6000);
+    if(!EXS[id].open){ exRenderCard(); return toast('🔒 ครูปิดการสอบชุดนี้แล้ว',2600); }
+    if(n===0 && GAS_URL){ const st=S.student;
+      const r=await gasCall({action:'exam_login',exam:id,create:true,key:S.key,first:st.first,last:st.last,cls:st.cls,room:st.room,no:st.no},10000);
+      if(r&&r.error==='closed'){ EXS[id].open=false; exRenderCard(); return toast('🔒 ครูปิดการสอบชุดนี้แล้ว',2600); }
+      if(r&&r.ok&&EX_SUBMITTED.includes(r.status)){ EXSYNC[id]=false; await exSync(id); return exOpen(id); } }
+    E.run=exNewRun(X,n); save();
+    gasCall({action:'exam_progress',exam:id,key:S.key,run:n,answered:0});
+    exStart(id);
+  });
+}
+function exStart(id){
+  const X=EXAMS[id], E=S.exams[id], st=S.student; CUR={X,E};
   $('exWho').textContent=st.first+' '+st.last+' · '+st.cls+'/'+st.room+' เลขที่ '+st.no;
+  $('exTitle').textContent=(E.run.n>0?'🛠 สอบซ่อมครั้งที่ '+E.run.n+' · ':'')+X.title;
+  $('exWatermark').innerHTML=Array.from({length:24},()=>`<span>${esc(st.first+' '+st.last)} · ${esc(st.cls+'/'+st.room)} · ${esc(st.no)}</span>`).join('');
+  $('scrExam').classList.toggle('anti',!!EXS[id].anti);
   show('scrExam'); exRenderQ();
-  clearInterval(exTickT); const t=()=>{ if(S&&S.exam&&!S.exam.submitted&&S.exam.started) $('exTime').textContent=exMmss((Date.now()-S.exam.started)/1000); };
+  clearInterval(exTickT); const t=()=>{ if(CUR&&CUR.E.run) $('exTime').textContent=exMmss((Date.now()-CUR.E.run.started)/1000); };
   t(); exTickT=setInterval(t,1000);
   const vp=$('vioPill'); if(E.violations){ vp.textContent='⚠ '+E.violations; vp.classList.remove('hidden'); } else vp.classList.add('hidden');
 }
-function exLeave(){ clearInterval(exTickT); save(); $('vioPill').classList.add('hidden'); renderHub(); }
+function exLeave(){ clearInterval(exTickT); save(); $('vioPill').classList.add('hidden'); CUR=null; renderHub(); }
 
-/* ---- modal ---- */
+/* ---------------- modal ---------------- */
 function exModal(body,wide){ $('modalHost').innerHTML=`<div class="modal" id="mdl"><div class="box ${wide?'wide':''}">${body}</div></div>`;
   $('mdl').addEventListener('click',e=>{ if(e.target.id==='mdl') exCloseModal(); }); }
 function exCloseModal(){ $('modalHost').innerHTML=''; }
 function exConfirm(body,onOk){ exModal(body); $('mBack').onclick=exCloseModal; $('mOk').onclick=()=>{ $('mOk').disabled=true; exCloseModal(); onOk(); }; }
 
-/* ---- question rendering ---- */
+/* ---------------- question screen ---------------- */
 function exRenderPalette(){
-  const E=S.exam; let html='', last='';
-  E.plan.forEach((p,i)=>{ const it=EX_ITEM[p.id];
+  const {X,E}=CUR, run=E.run; let html='', last='';
+  run.plan.forEach((p,i)=>{ const it=X.ITEM[p.id];
     if(it.part!==last){ if(last) html+='</div>'; html+=`<div class="grp"><span class="gl">${it.part}</span>`; last=it.part; }
-    html+=`<button class="pd ${exAnswered(p.id)?'ans':''} ${i===E.idx?'cur':''}" data-i="${i}" aria-label="ข้อ ${i+1}">${i+1}</button>`; });
+    html+=`<button class="pd ${exAnswered(X,run,p.id)?'ans':''} ${i===run.idx?'cur':''}" data-i="${i}" aria-label="ข้อ ${i+1}">${i+1}</button>`; });
   html+='</div><button class="send" id="btnExSend">ส่งข้อสอบ</button>';
   const pal=$('exPalette'); pal.innerHTML=html;
-  pal.querySelectorAll('.pd').forEach(b=>b.onclick=()=>{ E.idx=+b.dataset.i; save(); exRenderQ(); });
+  pal.querySelectorAll('.pd').forEach(b=>b.onclick=()=>{ run.idx=+b.dataset.i; save(); exRenderQ(); });
   $('btnExSend').onclick=exConfirmSubmit;
-  $('exAnswered').textContent=exCount();
+  $('exAnswered').textContent=exCount(X,run);
 }
 function exChanged(){
   save(); exRenderPalette();
   const sv=$('exSaved'); if(sv){ sv.textContent='✓ บันทึกคำตอบแล้ว'; clearTimeout(sv._t); sv._t=setTimeout(()=>{ if(sv) sv.textContent=''; },1400); }
-  clearTimeout(exProgT); exProgT=setTimeout(()=>{ if(S&&S.exam) gasCall({action:'exam_progress',key:S.key,answered:exCount()}); },1500);
+  clearTimeout(exProgT); const c=CUR; exProgT=setTimeout(()=>{ if(c&&c.E.run) gasCall({action:'exam_progress',exam:c.X.id,key:S.key,run:c.E.run.n,answered:exCount(c.X,c.E.run)}); },1500);
 }
 function exRenderQ(){
-  const E=S.exam, p=E.plan[E.idx], it=EX_ITEM[p.id], part=EX_PARTS[it.part], n=E.idx+1;
+  const {X,E}=CUR, run=E.run, p=run.plan[run.idx], it=X.ITEM[p.id], part=EX_PARTS[it.part], n=run.idx+1;
   exRenderPalette();
   let h=`<span class="partlbl p-${it.part}">${part.icon} ${part.name}</span><span class="qnum">ข้อ ${n} / ${EX_TOTAL}</span>`;
   if(it.t==='mc'){
     const long=it.o.some(o=>o.length>22);
     h+=`<div class="prompt">${esc(it.q).replace('___','<span class="blank"></span>')}</div>${it.h?`<div class="hint">💬 ${esc(it.h)}</div>`:'<div style="height:12px"></div>'}
-      <div class="opts" id="exOpts">${p.opts.map((k,j)=>`<button class="opt ${long?'long':''} ${E.answers[it.id]===k?'picked':''}" data-k="${k}"><span class="k">${'ABCD'[j]}</span><span>${esc(it.o[k])}</span></button>`).join('')}</div>`;
+      <div class="opts" id="exOpts">${p.opts.map((k,j)=>`<button class="opt ${long?'long':''} ${run.answers[it.id]===k?'picked':''}" data-k="${k}"><span class="k">${'ABCD'[j]}</span><span>${esc(it.o[k])}</span></button>`).join('')}</div>`;
   } else if(it.t==='fill'){
     h+=`<div class="prompt">${esc(it.q).replace('___','<span class="blank"></span>')}</div><div class="hint">💬 ${esc(it.h)} — พิมพ์คำที่หายไป 1 คำ</div>
-      <div class="fill-row"><input class="fill-in" id="exFill" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="20" placeholder="พิมพ์คำตอบ" value="${esc(E.answers[it.id]||'')}"></div>`;
+      <div class="fill-row"><input class="fill-in" id="exFill" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="20" placeholder="พิมพ์คำตอบ" value="${esc(run.answers[it.id]||'')}"></div>`;
   } else if(it.t==='drag'){
-    const a=E.answers[it.id];
+    const a=run.answers[it.id];
     const sent=esc(it.q).split('___').map((seg,i,arr)=>seg+(i<arr.length-1?`<button class="slot ${a[i]!=null?'filled':''}" data-drop="slot" data-b="${i}">${a[i]!=null?esc(it.bank[a[i]]):'&nbsp;'}</button>`:'')).join('');
     h+=`<div class="hint">💬 ${esc(it.h)}</div><div class="dsent" id="exSent">${sent}</div>
       <div class="hint" style="margin-bottom:8px">ลากคำไปวางในช่อง หรือแตะคำเพื่อใส่ช่องว่างถัดไป · แตะคำในช่องเพื่อเอาออก</div>
@@ -1379,22 +1550,22 @@ function exRenderQ(){
       <div class="tiles" id="exTiles">${p.order.map(k=>`<button class="tile" data-k="${k}">${esc(p.tiles[k])}</button>`).join('')}</div>
       <div class="order-actions"><button class="btn btn-ghost" id="exUndo">↶ ลบคำล่าสุด</button><button class="btn btn-ghost" id="exClear">ล้างทั้งหมด</button></div>`;
   }
-  const last=E.idx===E.plan.length-1;
+  const last=run.idx===run.plan.length-1;
   h+=`<div class="saved" id="exSaved"></div><div class="qnav">
-      <button class="btn btn-ghost" id="exPrev" ${E.idx===0?'disabled':''}>← ก่อนหน้า</button>
+      <button class="btn btn-ghost" id="exPrev" ${run.idx===0?'disabled':''}>← ก่อนหน้า</button>
       <button class="btn btn-primary" id="exNext">${last?'✔ ส่งข้อสอบ':'ถัดไป →'}</button></div>`;
   const card=$('exCard'); card.innerHTML=h; card.style.animation='none'; void card.offsetWidth; card.style.animation='';
-  $('exPrev').onclick=()=>{ if(E.idx>0){ E.idx--; save(); exRenderQ(); } };
-  $('exNext').onclick=()=>{ if(last) return exConfirmSubmit(); E.idx++; save(); exRenderQ(); };
-  if(it.t==='mc') card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ E.answers[it.id]=+b.dataset.k; beep('tap');
+  $('exPrev').onclick=()=>{ if(run.idx>0){ run.idx--; save(); exRenderQ(); } };
+  $('exNext').onclick=()=>{ if(last) return exConfirmSubmit(); run.idx++; save(); exRenderQ(); };
+  if(it.t==='mc') card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ run.answers[it.id]=+b.dataset.k; beep('tap');
     card.querySelectorAll('.opt').forEach(x=>x.classList.toggle('picked',x===b)); exChanged(); });
-  if(it.t==='fill'){ const inp=$('exFill'); inp.addEventListener('input',()=>{ E.answers[it.id]=inp.value.slice(0,20); exChanged(); });
+  if(it.t==='fill'){ const inp=$('exFill'); inp.addEventListener('input',()=>{ run.answers[it.id]=inp.value.slice(0,20); exChanged(); });
     inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('exNext').click(); } }); }
   if(it.t==='drag') exWireDrag(it,p);
   if(it.t==='order') exWireOrder(it,p);
 }
 function exWireDrag(it,p){
-  const a=S.exam.answers[it.id];
+  const a=CUR.E.run.answers[it.id];
   const place=(k,slot)=>{ if(a.includes(k)) return; let i=slot==null?a.findIndex(x=>x==null):slot; if(i<0) i=a.length-1; a[i]=k; beep('tap'); exChanged(); exRenderQ(); };
   document.querySelectorAll('#exBank .chip').forEach(ch=>{ const k=+ch.dataset.k;
     ch.onclick=()=>{ if(ch._dragged){ ch._dragged=false; return; } place(k,null); };
@@ -1402,7 +1573,7 @@ function exWireDrag(it,p){
   document.querySelectorAll('#exSent .slot').forEach(sl=>sl.onclick=()=>{ const i=+sl.dataset.b; if(a[i]!=null){ a[i]=null; exChanged(); exRenderQ(); } });
 }
 function exWireOrder(it,p){
-  const pick=S.exam.answers[it.id];
+  const pick=CUR.E.run.answers[it.id];
   const draw=()=>{ const area=$('exArea');
     area.innerHTML=pick.map((k,n)=>`<button class="tile" data-n="${n}">${esc(p.tiles[k])}</button>`).join('');
     area.classList.toggle('empty',!pick.length);
@@ -1436,33 +1607,39 @@ function exEnableDrag(el,onDrop){
 }
 function exDropAt(x,y,ghost){ if(ghost) ghost.style.display='none'; const t=document.elementFromPoint?document.elementFromPoint(x,y):null; if(ghost) ghost.style.display=''; return t&&t.closest?t.closest('[data-drop]'):null; }
 
-/* ---- submit & result ---- */
+/* ---------------- submit ---------------- */
 function exConfirmSubmit(){
-  const E=S.exam, n=exCount(), miss=E.plan.map((p,i)=>exAnswered(p.id)?null:i+1).filter(Boolean);
-  exConfirm(`<div style="font-size:44px">📝</div><h3>ยืนยันส่งข้อสอบ?</h3>
+  const {X,E}=CUR, run=E.run, n=exCount(X,run), miss=run.plan.map((p,i)=>exAnswered(X,run,p.id)?null:i+1).filter(Boolean);
+  exConfirm(`<div style="font-size:44px">${run.n?'🛠':'📝'}</div><h3>${run.n?'ส่งข้อสอบซ่อมครั้งที่ '+run.n+'?':'ยืนยันส่งข้อสอบ?'}</h3>
     <p class="note" style="font-size:15px">ตอบแล้ว <b>${n}</b> / ${EX_TOTAL} ข้อ</p>
     ${miss.length?`<p style="color:var(--bad);font-weight:800;margin-top:8px">ยังไม่ได้ตอบ: ข้อ ${miss.join(', ')}</p>`:'<p style="color:var(--ok);font-weight:800;margin-top:8px">ตอบครบทุกข้อแล้ว 👍</p>'}
-    <p class="note" style="margin-top:8px">ส่งแล้วแก้ไขไม่ได้ และทำได้ครั้งเดียว</p>
-    <div class="acts"><button class="btn btn-ghost" id="mBack">กลับไปตรวจ</button><button class="btn btn-primary" id="mOk">ยืนยันส่ง</button></div>`, exSubmit);
+    <p class="note" style="margin-top:8px">ส่งแล้วแก้ไขไม่ได้</p>
+    <div class="acts"><button class="btn btn-ghost" id="mBack">กลับไปตรวจ</button><button class="btn btn-primary" id="mOk">ยืนยันส่ง</button></div>`, exSubmitRun);
 }
-function exSubmit(){
-  const E=S.exam; if(E.submitted) return exShowResult();
-  const g=exGrade();
-  E.submitted=true; E.result={score:g.score,parts:g.parts,topics:g.topics,detail:g.detail,secs:Math.round((Date.now()-(E.started||Date.now()))/1000),time:nowTH()};
-  clearInterval(exTickT); save(); exSend(); beep('win'); exShowResult();
-  if(g.score>=10) setTimeout(()=>confetti(g.score===20?220:g.score>=15?140:70),350);
+function exSubmitRun(){
+  if(!CUR||!CUR.E.run) return;
+  const {X,E}=CUR, run=E.run, g=exGrade(X,run), id=X.id;
+  const res={score:g.score,parts:g.parts,topics:g.topics,detail:g.detail,answered:exCount(X,run),secs:Math.round((Date.now()-run.started)/1000),time:nowTH()};
+  E.run=null; clearInterval(exTickT);
+  if(run.n===0){
+    if(E.main) return exShowResult(id);
+    E.main=res; E.required=Math.max(0,EXS[id].pass-g.score); save(); exSendMain(id);
+    beep('win'); exShowResult(id);
+    if(g.score>=EXS[id].pass) setTimeout(()=>confetti(g.score===20?220:140),350);
+  } else {
+    if(E.repairs.length>=run.n) return exShowResult(id);
+    E.repairs.push(res); save(); exSendRepair(id,run.n);
+    beep('win'); exShowResult(id, run.n);
+    if(exRepairLeft(E)===0) setTimeout(()=>confetti(160),350);
+  }
 }
-function exSend(){
-  const E=S.exam, R=E&&E.result; if(!R||R.fromServer) return Promise.resolve();
-  const st=S.student;
-  return gasCall({action:'exam_submit',key:S.key,first:st.first,last:st.last,cls:st.cls,room:st.room,no:st.no,score:R.score,parts:R.parts,answered:exCount(),secs:R.secs,answers:JSON.stringify(R.detail)})
-    .then(r=>{ if(!GAS_URL) return;
-      if(r&&r.ok){ R.synced=true; if(r.already&&r.score!==undefined&&Number(r.score)!==R.score){ R.score=Number(r.score); R.parts=r.parts||R.parts; R.topics=null; R.note='คะแนนที่บันทึกในระบบ (ส่งไว้ก่อนหน้า)'; }
-        save(); if(!$('scrExamResult').classList.contains('hidden')) exShowResult(); }
-      else toast('⚠️ ส่งคะแนนเข้าระบบไม่สำเร็จ — กรุณาแคปผลสอบส่งครู แล้วเข้าสู่ระบบใหม่เมื่อมีเน็ต',4500); });
-}
-function exShowResult(){
-  const E=S.exam, R=E.result, st=S.student, lv=level(R.score/EX_TOTAL*100);
+
+/* ---------------- result ---------------- */
+function exShowResult(id,justRepaired){
+  const X=EXAMS[id], E=S.exams[id], R=E.main, st=S.student, set=EXS[id]; CUR={X,E};
+  if(!R) return renderHub();
+  const pass=(E.required?R.score+E.required:set.pass), lv=exLevel(R.score,E), left=exRepairLeft(E);
+  $('exResK').textContent='HELLO QUEST · SCORE TEST · ด่าน '+X.range;
   $('exName').textContent=st.first+' '+st.last;
   $('exClass').textContent='ชั้น '+st.cls+'/'+st.room+' · เลขที่ '+st.no;
   $('exScore').textContent=R.score;
@@ -1471,19 +1648,34 @@ function exShowResult(){
   const pc={A:['#FDF0DC','#9A5A00'],B:['#E2F4F5','#0E5C5E'],C:['#ECEAF6','#4E4A7E'],D:['#FDE7E7','#B00F18']};
   $('exParts').innerHTML=Object.keys(EX_PARTS).map(k=>{ const v=R.parts&&R.parts[k]!=null&&R.parts[k]!==''?R.parts[k]:'–';
     return `<div class="b" style="background:${pc[k][0]};color:${pc[k][1]}"><div class="l">${EX_PARTS[k].icon} ${EX_PARTS[k].short}</div><div class="v">${v}<span style="font-size:13px">/${EX_PARTS[k].max}</span></div></div>`; }).join('');
-  const cols={1:'#D0121B',2:'#F39C2B',3:'#19A9B5'};
-  let tp = R.topics ? '<div style="margin-top:14px">'+[1,2,3].map(n=>{ const [c,t]=R.topics[n];
-    return `<div class="topic"><span>ด่าน ${n} ${EX_TOPICS[n]}</span><div class="tb"><i style="width:${c/t*100}%;background:${cols[n]}"></i></div><span>${c}/${t}</span></div>`; }).join('')+'</div>' : '';
-  if(EX_SHOW_ANSWERS && R.detail) tp+='<div style="text-align:left;margin-top:14px">'+R.detail.map(d=>`<div class="det"><span class="m" style="background:${d.ok?'#E3F6EE':'#FDE7E7'};color:${d.ok?'#16935F':'#D0121B'}">${d.ok?'✓':'✗'}</span><span>${esc(EX_ITEM[d.id].q||EX_ITEM[d.id].th)}<br><b>${esc(exCorrectText(d.id))}</b></span></div>`).join('')+'</div>';
+  let tp = R.topics ? '<div style="margin-top:14px">'+X.stages.map(n=>{ const [c,t]=R.topics[n]||[0,1];
+    return `<div class="topic"><span>ด่าน ${n} ${EX_TOPIC_NAME[n]}</span><div class="tb"><i style="width:${c/t*100}%;background:${EX_TOPIC_COLOR[n]}"></i></div><span>${c}/${t}</span></div>`; }).join('')+'</div>' : '';
+  if(EX_SHOW_ANSWERS && R.detail) tp+='<div style="text-align:left;margin-top:14px">'+R.detail.map(d=>`<div class="det"><span class="m" style="background:${d.ok?'#E3F6EE':'#FDE7E7'};color:${d.ok?'#16935F':'#D0121B'}">${d.ok?'✓':'✗'}</span><span>${esc(X.ITEM[d.id].q||X.ITEM[d.id].th)}<br><b>${esc(exCorrectText(X,d.id))}</b></span></div>`).join('')+'</div>';
   $('exTopics').innerHTML=tp;
-  $('exMsg').textContent = R.note ? '✅ '+R.note : (GAS_URL && !R.synced && !R.fromServer) ? '⏳ ส่งข้อสอบแล้ว (กำลังบันทึกเข้าระบบ…)' : '✅ ส่งข้อสอบเรียบร้อยแล้ว';
+  // pass / repair panel
+  let panel='';
+  if(!E.required) panel=`<div class="rp ok">✅ <b>ผ่านเกณฑ์</b> (เกณฑ์ผ่าน ${pass}/20)</div>`;
+  else {
+    const chips=Array.from({length:E.required},(_,i)=>{ const r=E.repairs[i]; return `<span class="rc ${r?'d':''}">${r?('ครั้งที่ '+(i+1)+' · '+r.score+'/20'):('ครั้งที่ '+(i+1))}</span>`; }).join('');
+    panel = left>0
+      ? `<div class="rp bad">❌ <b>ยังไม่ผ่านเกณฑ์</b> (เกณฑ์ผ่าน ${pass}/20) — ต้องสอบซ่อม <b>${E.required}</b> ครั้ง · เหลืออีก <b>${left}</b> ครั้ง<div class="rcs">${chips}</div>
+          ${set.open?`<button class="btn btn-primary" id="btnRepair" style="margin-top:12px">🛠 เริ่มซ่อมครั้งที่ ${E.repairs.length+1}</button>`:'<div class="note" style="margin-top:10px">🔒 ครูยังไม่เปิดให้สอบซ่อม</div>'}</div>`
+      : `<div class="rp ok">🛠 <b>ซ่อมครบ ${E.required} ครั้งแล้ว</b> · คะแนนหลังซ่อม <b>${pass}/20</b><div class="rcs">${chips}</div></div>`;
+  }
+  if(justRepaired) panel=`<div class="rp info">🛠 ส่งข้อสอบซ่อมครั้งที่ ${justRepaired} แล้ว · ได้ <b>${E.repairs[justRepaired-1].score}/20</b></div>`+panel;
+  $('exRepair').innerHTML=panel;
+  const rb=$('btnRepair'); if(rb) rb.onclick=()=>exBegin(id,E.repairs.length+1);
+  const anyPending=(!R.synced&&!R.fromServer)||E.repairs.some(r=>!r.synced);
+  $('exMsg').textContent = R.note ? '✅ '+R.note : (GAS_URL && anyPending) ? '⏳ ส่งแล้ว (กำลังบันทึกเข้าระบบ…)' : '✅ บันทึกผลสอบเรียบร้อยแล้ว';
   $('exTimeRes').textContent=R.time||nowTH();
-  $('exVio').textContent=E.violations?'⚠ สลับหน้าจอ '+E.violations+' ครั้ง':'';
+  $('exVio').textContent=E.violations?'⚠ ออกจากหน้าสอบ '+E.violations+' ครั้ง':'';
   $('vioPill').classList.add('hidden');
   show('scrExamResult');
 }
+/* ป้ายระดับต้องสอดคล้องกับเกณฑ์ผ่านของครู (เดิมใช้ 50% ตายตัว → 10/20 ขึ้นว่า "Pass" ทั้งที่ไม่ผ่านเกณฑ์) */
+function exLevel(score,E){ if(E && E.required>0) return {en:'Not passed yet',th:'ยังไม่ผ่านเกณฑ์',c:'#D0121B'}; const l=level(score/EX_TOTAL*100); return l.en==='Keep practicing'?{en:'Pass',th:'ผ่านเกณฑ์',c:'#B0620A'}:l; }
 function exSavePNG(){
-  const E=S.exam, R=E.result, st=S.student, lv=level(R.score/EX_TOTAL*100);
+  if(!CUR) return; const {X,E}=CUR, R=E.main, st=S.student, left=exRepairLeft(E);
   const W=1080,H=1350,cv=$('cv'),c=cv.getContext&&cv.getContext('2d'); if(!c) return toast('บันทึกรูปไม่ได้ กรุณาแคปหน้าจอแทน');
   cv.width=W; cv.height=H;
   const F='"Sukhumvit Set","Noto Sans Thai","Leelawadee UI",Thonburi,system-ui,sans-serif', rr=(x,y,w,h,r)=>roundRect(c,x,y,w,h,r);
@@ -1491,93 +1683,155 @@ function exSavePNG(){
   c.fillStyle='#FFFBF5'; rr(60,60,W-120,H-120,48); c.fill();
   c.save(); rr(60,60,W-120,250,48); c.clip(); const g=c.createLinearGradient(60,0,W-60,0); g.addColorStop(0,'#FF6A3D'); g.addColorStop(.5,'#D0121B'); g.addColorStop(1,'#A80E33');
   c.fillStyle=g; c.fillRect(60,60,W-120,250); c.fillStyle='#F39C2B'; c.beginPath(); c.arc(W-110,90,150,0,7); c.fill(); c.fillStyle='#0E5C5E'; c.beginPath(); c.arc(W-330,310,60,0,7); c.fill(); c.restore();
-  c.fillStyle='#fff'; c.font='800 28px '+F; c.fillText('HELLO QUEST · SCORE TEST · ด่าน 1–3',110,150); c.font='900 76px '+F; c.fillText('RESULT',110,245);
+  c.fillStyle='#fff'; c.font='800 28px '+F; c.fillText('HELLO QUEST · SCORE TEST · ด่าน '+X.range,110,150); c.font='900 76px '+F; c.fillText('RESULT',110,245);
   c.textAlign='center'; c.fillStyle='#2B2422'; c.font='900 54px '+F; c.fillText(fit(c,st.first+' '+st.last,W-220),W/2,400);
   c.fillStyle='#76695F'; c.font='700 32px '+F; c.fillText('ชั้น '+st.cls+'/'+st.room+'  ·  เลขที่ '+st.no,W/2,452);
-  c.fillStyle='#D0121B'; c.font='900 200px '+F; const sw=c.measureText(String(R.score)).width; c.fillText(String(R.score),W/2-40,660);
-  c.fillStyle='#76695F'; c.font='800 56px '+F; c.textAlign='left'; c.fillText('/ 20',W/2-40+sw/2+10,660); c.textAlign='center';
-  c.fillStyle=lv.c; c.font='900 46px '+F; c.fillText(lv.en+' · '+lv.th,W/2,740);
+  c.fillStyle='#D0121B'; c.font='900 190px '+F; const sw=c.measureText(String(R.score)).width; c.fillText(String(R.score),W/2-40,650);
+  c.fillStyle='#76695F'; c.font='800 56px '+F; c.textAlign='left'; c.fillText('/ 20',W/2-40+sw/2+10,650); c.textAlign='center';
+  const pass=E.required?R.score+E.required:EXS[X.id].pass;
+  const line=!E.required?'ผ่านเกณฑ์ ('+pass+'/20)':left>0?'ไม่ผ่าน · ซ่อมแล้ว '+E.repairs.length+'/'+E.required+' ครั้ง':'ซ่อมครบ '+E.required+' ครั้ง · หลังซ่อม '+pass+'/20';
+  c.fillStyle=!E.required||!left?'#16935F':'#D0121B'; c.font='900 42px '+F; c.fillText(line,W/2,725);
   const pc={A:['#FDF0DC','#9A5A00'],B:['#E2F4F5','#0E5C5E'],C:['#ECEAF6','#4E4A7E'],D:['#FDE7E7','#B00F18']};
-  Object.keys(EX_PARTS).forEach((k,i)=>{ const x=110+i*222, y=800; c.fillStyle=pc[k][0]; rr(x,y,200,170,28); c.fill(); c.fillStyle=pc[k][1];
+  Object.keys(EX_PARTS).forEach((k,i)=>{ const x=110+i*222, y=780; c.fillStyle=pc[k][0]; rr(x,y,200,170,28); c.fill(); c.fillStyle=pc[k][1];
     c.font='800 26px '+F; c.fillText(EX_PARTS[k].short,x+100,y+52); const v=R.parts&&R.parts[k]!=null&&R.parts[k]!==''?R.parts[k]:'–'; c.font='900 64px '+F; c.fillText(v+'/'+EX_PARTS[k].max,x+100,y+132); });
-  if(R.topics){ const tc={1:'#D0121B',2:'#F39C2B',3:'#19A9B5'}; c.textAlign='left';
-    [1,2,3].forEach((n,i)=>{ const y=1030+i*60, [cc,tt]=R.topics[n]; c.fillStyle='#2B2422'; c.font='800 28px '+F; c.fillText('ด่าน '+n+' '+EX_TOPICS[n],110,y+10);
-      c.fillStyle='#F1EAE1'; rr(500,y-10,390,18,9); c.fill(); c.fillStyle=tc[n]; rr(500,y-10,Math.max(18,390*cc/tt),18,9); c.fill();
-      c.fillStyle='#2B2422'; c.textAlign='right'; c.fillText(cc+'/'+tt,W-110,y+10); c.textAlign='left'; }); }
-  c.fillStyle='#76695F'; c.font='600 26px '+F; c.textAlign='left'; c.fillText((R.time||nowTH())+(E.violations?'   ·   ⚠ สลับหน้าจอ '+E.violations+' ครั้ง':''),110,H-110);
+  c.textAlign='left';
+  if(R.topics) X.stages.forEach((n,i)=>{ const y=1010+i*58, [cc,tt]=R.topics[n]||[0,1]; c.fillStyle='#2B2422'; c.font='800 28px '+F; c.fillText('ด่าน '+n+' '+EX_TOPIC_NAME[n],110,y+10);
+    c.fillStyle='#F1EAE1'; rr(560,y-10,330,18,9); c.fill(); c.fillStyle=EX_TOPIC_COLOR[n]; rr(560,y-10,Math.max(18,330*cc/tt),18,9); c.fill();
+    c.fillStyle='#2B2422'; c.textAlign='right'; c.fillText(cc+'/'+tt,W-110,y+10); c.textAlign='left'; });
+  if(E.repairs.length){ c.fillStyle='#4E4A7E'; c.font='800 26px '+F; c.fillText(fit(c,'คะแนนซ่อม: '+E.repairs.map((r,i)=>'ครั้งที่ '+(i+1)+' = '+r.score+'/20').join('  ·  '),W-220),110,1192); }
+  c.fillStyle='#76695F'; c.font='600 26px '+F; c.fillText((R.time||nowTH())+(E.violations?'   ·   ⚠ ออกจากหน้าสอบ '+E.violations+' ครั้ง':''),110,H-110);
   c.textAlign='right'; c.fillText('By T.OAT',W-110,H-110); c.textAlign='left';
-  try{ const a=document.createElement('a'); a.href=cv.toDataURL('image/png'); a.download='ScoreTest_'+st.cls.replace('.','')+'-'+st.room+'_'+st.no+'_'+st.first+'.png';
+  try{ const a=document.createElement('a'); a.href=cv.toDataURL('image/png'); a.download='ScoreTest'+X.range.replace('–','-')+'_'+st.cls.replace('.','')+'-'+st.room+'_'+st.no+'_'+st.first+'.png';
     document.body.appendChild(a); a.click(); a.remove(); toast('บันทึกรูปแล้ว ✔ (ถ้าไม่ดาวน์โหลด ให้แคปหน้าจอแทน)'); }catch(e){ toast('บันทึกรูปไม่ได้ กรุณาแคปหน้าจอแทน'); }
 }
-function exInExam(){ return S && S.exam && !S.exam.submitted && !$('scrExam').classList.contains('hidden'); }
-function exViolation(kind){
-  const E=S.exam; E.violations=(E.violations||0)+1; save();
-  $('vioPill').textContent='⚠ '+E.violations; $('vioPill').classList.remove('hidden');
-  toast('⚠️ ตรวจพบการ'+kind+'ระหว่างสอบ — ระบบบันทึกไว้แล้ว',2800);
-  gasCall({action:'exam_violation',key:S.key,kind});
-}
 
-/* ---- admin: exam tab ---- */
-let EXA={rows:[],sort:{k:'cls',d:1}};
-const EXCOLS=[['no','เลขที่'],['name','ชื่อ-นามสกุล'],['cls','ชั้น/ห้อง'],['status','สถานะ'],['score','คะแนน'],['a','A /6'],['b','B /5'],['c','C /5'],['d','D /4'],['answered','ตอบ'],['secs','เวลา'],['violations','⚠'],['updated','อัปเดต'],['_','']];
+/* ---------------- anti-cheat (exam runs only) ---------------- */
+function exInExam(){ return !!(S && CUR && CUR.E && CUR.E.run && !$('scrExam').classList.contains('hidden')); }
+function exAntiOn(){ return exInExam() && !!EXS[CUR.X.id].anti; }
+let exLastVio=0;
+function exViolation(kind){
+  if(!exInExam()) return;
+  const now=Date.now(); if(now-exLastVio<1500) return; exLastVio=now;        // blur + hidden fire together → นับครั้งเดียว
+  const {X,E}=CUR; E.violations=(E.violations||0)+1; save();
+  $('vioPill').textContent='⚠ '+E.violations; $('vioPill').classList.remove('hidden');
+  gasCall({action:'exam_violation',exam:X.id,key:S.key,kind,run:E.run?E.run.n:0});
+  const ov=$('antiOverlay'); $('antiCount').textContent=E.violations; $('antiKind').textContent=kind; ov.classList.remove('hidden');
+}
+document.addEventListener('visibilitychange',()=>{ if(document.hidden && exAntiOn()) exViolation('สลับแอป/แท็บ'); });
+window.addEventListener('blur',()=>{ if(exAntiOn()) setTimeout(()=>{ if(exAntiOn() && !document.hasFocus()) exViolation('ออกจากหน้าต่างสอบ'); },300); });
+['copy','cut','paste','contextmenu','dragstart'].forEach(t=>document.addEventListener(t,e=>{
+  if(!exAntiOn()) return; if(t==='dragstart' && e.target.closest && e.target.closest('.chip,.tile')) return;
+  e.preventDefault(); if(t!=='contextmenu'&&t!=='dragstart') toast('🚫 ไม่อนุญาตให้คัดลอก/วางระหว่างสอบ',1800); },true));
+document.addEventListener('selectstart',e=>{ if(exAntiOn() && !(e.target.closest&&e.target.closest('input'))) e.preventDefault(); },true);
+document.addEventListener('keydown',e=>{
+  if(!exAntiOn()) return; const k=(e.key||'').toLowerCase(), mod=e.ctrlKey||e.metaKey;
+  if(k==='printscreen'){ e.preventDefault(); exViolation('กดปุ่มแคปหน้าจอ'); return; }
+  if(k==='f12' || (mod&&e.shiftKey&&['i','j','c'].includes(k)) || (mod&&k==='u')){ e.preventDefault(); exViolation('พยายามเปิดเครื่องมือนักพัฒนา'); return; }
+  if(mod && ['c','v','x','a','p','s','f'].includes(k)){ e.preventDefault(); toast('🚫 ปุ่มลัดนี้ถูกปิดระหว่างสอบ',1500); }
+},true);
+
+/* ---------------- admin: exam tab ---------------- */
+let EXA={exam:'E1',rows:[],sort:{k:'cls',d:1}};
+const EXCOLS=[['no','เลขที่'],['name','ชื่อ-นามสกุล'],['cls','ชั้น/ห้อง'],['status','สถานะ'],['score','คะแนนสอบ'],['repairsDone','ซ่อม'],['repairScores','คะแนนซ่อม'],['final','คะแนนสุดท้าย'],['now','ขณะนี้'],['secs','เวลา'],['violations','⚠ ทุจริต'],['updated','อัปเดต'],['_','']];
 function exAdminInit(){
   $('xHead').innerHTML=EXCOLS.map(([k,l])=>`<th data-k="${k}">${l}</th>`).join('');
   $('xHead').querySelectorAll('th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(k==='_') return; EXA.sort={k,d:EXA.sort.k===k?-EXA.sort.d:1}; exDrawAdmin(); });
+  document.querySelectorAll('#xExamTabs .tab').forEach(b=>b.onclick=()=>{ EXA.exam=b.dataset.exam; document.querySelectorAll('#xExamTabs .tab').forEach(x=>x.classList.toggle('on',x===b)); EXA.rows=[]; exDrawSettings(); exLoadAdmin(); });
+  $('xOpen').onchange=()=>exSaveSetting({open:$('xOpen').checked});
+  $('xAnti').onchange=()=>exSaveSetting({anti:$('xAnti').checked});
+  $('xPassSave').onclick=()=>{ const v=Math.round(Number($('xPass').value)); if(!(v>=1&&v<=20)) return toast('เกณฑ์ผ่านต้องเป็น 1–20'); exSaveSetting({pass:v}); };
+  exLoadSettings().then(exDrawSettings);
+}
+function exDrawSettings(){
+  const s=EXS[EXA.exam];
+  $('xOpen').checked=!!s.open; $('xAnti').checked=!!s.anti; $('xPass').value=s.pass;
+  $('xOpenLbl').textContent=s.open?'เปิดให้สอบอยู่':'ปิดอยู่ (นักเรียนยังเข้าสอบไม่ได้)';
+  $('xOpenLbl').style.color=s.open?'#16935F':'#D0121B';
+  $('xSetTitle').textContent='ตั้งค่า · '+EXAMS[EXA.exam].title;
+}
+async function exSaveSetting(patch){
+  const id=EXA.exam, prev=Object.assign({},EXS[id]);
+  EXS[id]=Object.assign({},EXS[id],patch); exDrawSettings();
+  if(!GAS_URL){ const all=store(APP_ID+':exset')||{}; all[id]=EXS[id]; store(APP_ID+':exset',all); return toast('บันทึกแล้ว (เฉพาะเครื่องนี้ — ยังไม่ได้ตั้ง GAS_URL)'); }
+  const r=await gasCall(Object.assign({action:'exam_setSettings',pin:ADMIN.pin,exam:id},patch));
+  if(r&&r.ok&&r.settings){ EX_IDS.forEach(k=>{ if(r.settings[k]) EXS[k]=r.settings[k]; }); exDrawSettings(); toast('บันทึกการตั้งค่าแล้ว ✔'); }
+  else { EXS[id]=prev; exDrawSettings(); toast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); }
 }
 async function exLoadAdmin(){
-  if(GAS_URL){ const r=await gasCall({action:'exam_list',pin:ADMIN.pin}); if(r&&r.ok){ EXA.rows=r.rows||[]; } else return; }
+  const id=EXA.exam;
+  if(GAS_URL){ const r=await gasCall({action:'exam_list',pin:ADMIN.pin,exam:id}); if(r&&r.ok){ if(EXA.exam===id) EXA.rows=r.rows||[]; } else return; }
   else { const rows=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k.indexOf(APP_ID+':s:')!==0) continue;
-      const s=JSON.parse(localStorage.getItem(k)), E=s.exam; if(!E||!E.started) continue; const st=s.student, R=E.result||{}, P=R.parts||{};
-      rows.push({key:s.key,first:st.first,last:st.last,cls:st.cls,room:st.room,no:st.no,status:E.submitted?'ส่งแล้ว':'กำลังทำ',score:E.submitted?R.score:'',a:P.A??'',b:P.B??'',c:P.C??'',d:P.D??'',
-        answered:exCount(E),violations:E.violations||0,secs:R.secs||'',answers:R.detail?JSON.stringify(R.detail):'',updated:''}); } }catch(e){}
+      const s=JSON.parse(localStorage.getItem(k)); const E=s.exams&&s.exams[id]; if(!E||(!E.run&&!E.main)) continue; const st=s.student, R=E.main||{}, P=R.parts||{};
+      const left=E.main?Math.max(0,(E.required||0)-E.repairs.length):0;
+      rows.push({key:s.key,first:st.first,last:st.last,cls:st.cls,room:st.room,no:st.no,
+        status:!E.main?'กำลังทำ':!E.required?'ผ่าน':left?'ต้องซ่อม':'ซ่อมครบแล้ว',score:E.main?R.score:'',a:P.A??'',b:P.B??'',c:P.C??'',d:P.D??'',
+        repairs:E.required||0,repairsDone:E.repairs.length,repairScores:E.repairs.map(r=>r.score).join(','),final:!E.main?'':!E.required?R.score:left?'':R.score+E.required,
+        now:E.run?(E.run.n?'กำลังซ่อมครั้งที่ '+E.run.n:'กำลังสอบ'):'',answered:0,violations:E.violations||0,secs:R.secs||'',answers:R.detail?JSON.stringify(R.detail):'',log:'',updated:''}); } }catch(e){}
     EXA.rows=rows; }
   exDrawAdmin();
 }
 function exFiltered(){
-  const q=norm($('xSearch').value).toLowerCase(), fc=$('xClass').value, fr=$('xRoom').value;
-  return EXA.rows.filter(r=>(!fc||r.cls===fc)&&(!fr||String(r.room)===fr)&&(!q||(r.first+' '+r.last).toLowerCase().includes(q)||String(r.no)===q));
+  const q=norm($('xSearch').value).toLowerCase(), fc=$('xClass').value, fr=$('xRoom').value, fs=$('xStatus').value;
+  return EXA.rows.filter(r=>(!fc||r.cls===fc)&&(!fr||String(r.room)===fr)&&(!fs||r.status===fs)&&(!q||(r.first+' '+r.last).toLowerCase().includes(q)||String(r.no)===q));
 }
 function exDrawAdmin(){
   let rows=exFiltered(); const {k,d}=EXA.sort;
   const val=r=>k==='name'?(r.first+' '+r.last):k==='cls'?(r.cls+'/'+String(r.room).padStart(2,'0')+'/'+String(r.no).padStart(3,'0')):k==='no'?Number(r.no):(r[k]===''||r[k]==null?-1:(isNaN(r[k])?String(r[k]):Number(r[k])));
   rows.sort((x,y)=>{const a=val(x),b=val(y);return(a>b?1:a<b?-1:0)*d});
-  const sub=rows.filter(r=>r.status==='ส่งแล้ว'), sc=sub.map(r=>Number(r.score)||0);
-  $('xStats').innerHTML=[['เข้าสอบ',rows.length],['ส่งแล้ว',sub.length],['กำลังทำ',rows.length-sub.length],['คะแนนเฉลี่ย',sc.length?(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):'-'],
-    ['สูงสุด',sc.length?Math.max(...sc):'-'],['ต่ำสุด',sc.length?Math.min(...sc):'-'],['ผ่าน (≥10)',sc.length?Math.round(sc.filter(x=>x>=10).length/sc.length*100)+'%':'-']]
+  const sub=rows.filter(r=>EX_SUBMITTED.includes(r.status)), sc=sub.map(r=>Number(r.score)||0);
+  const cnt=s=>rows.filter(r=>r.status===s).length;
+  $('xStats').innerHTML=[['เข้าสอบ',rows.length],['ส่งแล้ว',sub.length],['ผ่าน',cnt('ผ่าน')],['ต้องซ่อม',cnt('ต้องซ่อม')],['ซ่อมครบ',cnt('ซ่อมครบแล้ว')],['คะแนนเฉลี่ย',sc.length?(sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(1):'-'],['มีการทุจริต',rows.filter(r=>r.violations>0).length]]
     .map(([l,v])=>`<div class="stat"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
-  const cell=(v,mx)=>{ if(v===''||v==null) return '<span style="color:#C9BCAF">—</span>'; const p=Number(v)/mx, bg=p>=.9?'#E3F6EE':p>=.7?'#E2F4F5':p>=.5?'#FDF0DC':'#FDE7E7', fg=p>=.9?'#16935F':p>=.7?'#0E5C5E':p>=.5?'#9A5A00':'#D0121B';
+  const pass=EXS[EXA.exam].pass;
+  const cell=(v,mx)=>{ if(v===''||v==null) return '<span style="color:#C9BCAF">—</span>'; const p=Number(v)/mx, bg=Number(v)>=pass?'#E3F6EE':'#FDE7E7', fg=Number(v)>=pass?'#16935F':'#D0121B';
     return `<span class="cell-s" style="background:${bg};color:${fg}">${esc(v)}</span>`; };
+  const stc={'ผ่าน':'#16935F','ซ่อมครบแล้ว':'#0F7F86','ต้องซ่อม':'#D0121B','กำลังทำ':'#9A5A00'};
   $('xBody').innerHTML=rows.length?rows.map(r=>`<tr>
     <td class="num">${esc(r.no)}</td><td><b>${esc(r.first)} ${esc(r.last)}</b></td><td>${esc(r.cls)}/${esc(r.room)}</td>
-    <td style="font-weight:800;color:${r.status==='ส่งแล้ว'?'#16935F':'#9A5A00'}">${esc(r.status)}</td>
-    <td class="num" style="font-size:16px">${cell(r.score,20)}</td><td class="num">${cell(r.a,6)}</td><td class="num">${cell(r.b,5)}</td><td class="num">${cell(r.c,5)}</td><td class="num">${cell(r.d,4)}</td>
-    <td class="num">${esc(r.answered)}/20</td><td style="font-size:12px">${r.secs!==''&&r.secs!=null?exMmss(r.secs):''}</td>
-    <td class="num" style="color:${r.violations>0?'var(--bad)':'#C9BCAF'}">${esc(r.violations||0)}</td><td style="font-size:12px;color:var(--muted)">${esc(r.updated||'')}</td>
+    <td style="font-weight:800;color:${stc[r.status]||'#76695F'}">${esc(r.status)}</td>
+    <td class="num" style="font-size:16px">${cell(r.score,20)}</td>
+    <td class="num">${r.repairs?esc(r.repairsDone)+'/'+esc(r.repairs):'—'}</td>
+    <td style="font-size:12px">${esc(String(r.repairScores||'').split(',').filter(Boolean).join(' · '))}</td>
+    <td class="num" style="font-size:16px;color:var(--red)">${esc(r.final===''||r.final==null?'—':r.final)}</td>
+    <td style="font-size:12px;color:var(--muted)">${esc(r.now||'')}</td>
+    <td style="font-size:12px">${r.secs!==''&&r.secs!=null?exMmss(r.secs):''}</td>
+    <td class="num">${r.violations>0?`<button class="mini-btn danger" data-log="${esc(r.key)}">⚠ ${esc(r.violations)}</button>`:'<span style="color:#C9BCAF">0</span>'}</td>
+    <td style="font-size:12px;color:var(--muted)">${esc(r.updated||'')}</td>
     <td style="display:flex;gap:6px"><button class="mini-btn" data-view="${esc(r.key)}" ${(r.answers||r.hasAnswers)?'':'disabled'}>ดูคำตอบ</button><button class="mini-btn danger" data-xreset="${esc(r.key)}">รีเซ็ต</button></td></tr>`).join('')
-    :`<tr><td colspan="${EXCOLS.length}" style="text-align:center;padding:30px;color:var(--muted)">ยังไม่มีนักเรียนเข้าสอบ</td></tr>`;
+    :`<tr><td colspan="${EXCOLS.length}" style="text-align:center;padding:30px;color:var(--muted)">ยังไม่มีนักเรียนเข้าสอบชุดนี้</td></tr>`;
   $('xBody').querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>exViewAnswers(b.dataset.view));
+  $('xBody').querySelectorAll('[data-log]').forEach(b=>b.onclick=()=>exViewLog(b.dataset.log));
   $('xBody').querySelectorAll('[data-xreset]').forEach(b=>b.onclick=()=>exResetStudent(b.dataset.xreset,b));
 }
-function exParse(s){ try{ const d=JSON.parse(s); return Array.isArray(d)?d.filter(x=>x&&EX_ITEM[x.id]):[]; }catch(e){ return []; } }
+async function exFull(){ if(!GAS_URL) return true; const id=EXA.exam; const r=await gasCall({action:'exam_list',pin:ADMIN.pin,exam:id,full:true}); if(r&&r.ok){ if(EXA.exam===id) EXA.rows=r.rows||[]; return true; } toast('โหลดข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง'); return false; }
+function exParse(X,s){ try{ const d=JSON.parse(s); return Array.isArray(d)?d.filter(x=>x&&X.ITEM[x.id]):[]; }catch(e){ return []; } }
 const exLabel = it => it.t==='order'?it.th:it.q;
-async function exFull(){ if(!GAS_URL) return true; const r=await gasCall({action:'exam_list',pin:ADMIN.pin,full:true}); if(r&&r.ok){ EXA.rows=r.rows||[]; return true; } toast('โหลดคำตอบไม่สำเร็จ ลองใหม่อีกครั้ง'); return false; }
 async function exViewAnswers(key){
   if(!(await exFull())) return;
-  const r=EXA.rows.find(x=>x.key===key); if(!r) return; const det=exParse(r.answers);
+  const X=EXAMS[EXA.exam], r=EXA.rows.find(x=>x.key===key); if(!r) return; const det=exParse(X,r.answers);
   exModal(`<h3>📋 ${esc(r.first)} ${esc(r.last)} · ${esc(r.cls)}/${esc(r.room)} เลขที่ ${esc(r.no)}</h3>
-    <p class="note">คะแนน <b>${esc(r.score)}</b>/20 · A ${esc(r.a)} · B ${esc(r.b)} · C ${esc(r.c)} · D ${esc(r.d)}</p>
-    <div style="margin-top:10px">${EX_ITEMS.map(it=>{ const d=det.find(x=>x.id===it.id)||{ok:0,g:''};
+    <p class="note">${esc(X.title)} · คะแนนสอบ <b>${esc(r.score)}</b>/20 · A ${esc(r.a)} · B ${esc(r.b)} · C ${esc(r.c)} · D ${esc(r.d)}${r.repairs?` · ซ่อม ${esc(r.repairsDone)}/${esc(r.repairs)} (${esc(r.repairScores)})`:''}</p>
+    <div style="margin-top:10px">${X.items.map(it=>{ const d=det.find(x=>x.id===it.id)||{ok:0,g:''};
       return `<div class="det"><span class="m" style="background:${d.ok?'#E3F6EE':'#FDE7E7'};color:${d.ok?'#16935F':'#D0121B'}">${it.id}</span>
-        <span>${esc(exLabel(it))}<br>ตอบ: <span style="color:${d.ok?'#16935F':'#D0121B'};font-weight:800">${esc(d.g||'(ไม่ได้ตอบ)')}</span>${d.ok?'':` · เฉลย: <b>${esc(exCorrectText(it.id))}</b>`}</span></div>`; }).join('')}</div>
+        <span>${esc(exLabel(it))}<br>ตอบ: <span style="color:${d.ok?'#16935F':'#D0121B'};font-weight:800">${esc(d.g||'(ไม่ได้ตอบ)')}</span>${d.ok?'':` · เฉลย: <b>${esc(exCorrectText(X,it.id))}</b>`}</span></div>`; }).join('')}</div>
+    <div class="acts"><button class="btn btn-teal" id="mClose">ปิด</button></div>`,true);
+  $('mClose').onclick=exCloseModal;
+}
+async function exViewLog(key){
+  if(!(await exFull())) return;
+  const r=EXA.rows.find(x=>x.key===key); if(!r) return;
+  const lines=String(r.log||'').split('\n').filter(Boolean);
+  exModal(`<h3>🛡️ บันทึกการทุจริต · ${esc(r.first)} ${esc(r.last)}</h3><p class="note">${esc(r.cls)}/${esc(r.room)} เลขที่ ${esc(r.no)} · ทั้งหมด ${esc(r.violations)} ครั้ง</p>
+    <div style="margin-top:10px">${lines.length?lines.map(l=>`<div class="det"><span class="m" style="background:#FDE7E7;color:#D0121B">⚠</span><span>${esc(l)}</span></div>`).join(''):'<p class="note">ไม่มีรายละเอียด (บันทึกบนเครื่องนักเรียน)</p>'}</div>
     <div class="acts"><button class="btn btn-teal" id="mClose">ปิด</button></div>`,true);
   $('mClose').onclick=exCloseModal;
 }
 async function exItemAnalysis(){
   if(!(await exFull())) return;
-  const rows=exFiltered().filter(r=>r.status==='ส่งแล้ว'), stat={}; EX_ITEMS.forEach(it=>stat[it.id]=[0,0]);
-  rows.forEach(r=>exParse(r.answers).forEach(d=>{ stat[d.id][1]++; if(d.ok) stat[d.id][0]++; }));
-  const list=EX_ITEMS.map(it=>({it,c:stat[it.id][0],t:stat[it.id][1]})).sort((a,b)=>(a.t?a.c/a.t:1)-(b.t?b.c/b.t:1));
-  exModal(`<h3>📊 วิเคราะห์รายข้อ (${rows.length} คนที่ส่งแล้ว)</h3><p class="note">เรียงจากข้อที่ถูกน้อยที่สุด — ใช้ดูว่าควรสอนซ่อมเรื่องไหน</p>
+  const X=EXAMS[EXA.exam], rows=exFiltered().filter(r=>EX_SUBMITTED.includes(r.status)), stat={}; X.items.forEach(it=>stat[it.id]=[0,0]);
+  rows.forEach(r=>exParse(X,r.answers).forEach(d=>{ stat[d.id][1]++; if(d.ok) stat[d.id][0]++; }));
+  const list=X.items.map(it=>({it,c:stat[it.id][0],t:stat[it.id][1]})).sort((a,b)=>(a.t?a.c/a.t:1)-(b.t?b.c/b.t:1));
+  exModal(`<h3>📊 วิเคราะห์รายข้อ · ${esc(X.title)} (${rows.length} คน)</h3><p class="note">ใช้คะแนนสอบจริงครั้งแรก · เรียงจากข้อที่ถูกน้อยที่สุด</p>
     <div style="margin-top:10px">${list.map(x=>{ const p=x.t?Math.round(x.c/x.t*100):0, col=p>=70?'#16935F':p>=50?'#F39C2B':'#D0121B';
       return `<div class="ia"><b>${x.it.id}</b><div><div style="margin-bottom:4px">${esc(exLabel(x.it))} <span style="color:var(--muted)">· ด่าน ${x.it.st}</span></div><div class="tb"><i style="width:${p}%;background:${col}"></i></div></div><b style="color:${col};text-align:right">${x.t?p+'%':'–'}</b></div>`; }).join('')}</div>
     <div class="acts"><button class="btn btn-teal" id="mClose">ปิด</button></div>`,true);
@@ -1586,24 +1840,25 @@ async function exItemAnalysis(){
 async function exResetStudent(key,btn){
   const r=EXA.rows.find(x=>x.key===key); if(!r) return;
   if(btn.dataset.c!=='1'){ btn.dataset.c='1'; btn.textContent='ยืนยัน?'; setTimeout(()=>{ btn.dataset.c=''; btn.textContent='รีเซ็ต'; },3000); return; }
-  btn.disabled=true;
-  if(GAS_URL){ const res=await gasCall({action:'exam_reset',pin:ADMIN.pin,key}); if(!(res&&res.ok)){ toast('รีเซ็ตไม่สำเร็จ'); btn.disabled=false; return; } }
-  else { const s=store(APP_ID+':s:'+key); if(s){ delete s.exam; store(APP_ID+':s:'+key,s); } }
-  toast('รีเซ็ตข้อสอบของ '+r.first+' แล้ว — ให้นักเรียนออกจากระบบแล้วเข้าใหม่เพื่อสอบใหม่',3500); exLoadAdmin();
+  btn.disabled=true; const id=EXA.exam;
+  if(GAS_URL){ const res=await gasCall({action:'exam_reset',pin:ADMIN.pin,exam:id,key}); if(!(res&&res.ok)){ toast('รีเซ็ตไม่สำเร็จ'); btn.disabled=false; return; } }
+  else { const s=store(APP_ID+':s:'+key); if(s&&s.exams){ delete s.exams[id]; store(APP_ID+':s:'+key,s); } }
+  toast('รีเซ็ต '+EXAMS[id].title+' ของ '+r.first+' แล้ว — ให้นักเรียนออกจากระบบแล้วเข้าใหม่',3500); exLoadAdmin();
 }
 async function exExportCSV(){
   if(!(await exFull())) return;
-  const head=['เลขที่','ชื่อ','นามสกุล','ชั้น','ห้อง','สถานะ','คะแนน/20','PartA/6','PartB/5','PartC/5','PartD/4','ตอบ','เวลา(นาที)','สลับจอ'].concat(EX_ITEMS.map(it=>it.id));
-  const lines=[head].concat(exFiltered().map(r=>{ const det=exParse(r.answers);
-    return [r.no,r.first,r.last,r.cls,r.room,r.status,r.score,r.a,r.b,r.c,r.d,r.answered,r.secs?(r.secs/60).toFixed(1):'',r.violations].concat(EX_ITEMS.map(it=>{ const d=det.find(x=>x.id===it.id); return d?(d.ok?1:0):''; })); }))
+  const X=EXAMS[EXA.exam];
+  const head=['เลขที่','ชื่อ','นามสกุล','ชั้น','ห้อง','สถานะ','คะแนนสอบ/20','PartA/6','PartB/5','PartC/5','PartD/4','ต้องซ่อม(ครั้ง)','ซ่อมแล้ว','คะแนนซ่อม','คะแนนสุดท้าย','เวลา(นาที)','ทุจริต(ครั้ง)'].concat(X.items.map(it=>it.id));
+  const lines=[head].concat(exFiltered().map(r=>{ const det=exParse(X,r.answers);
+    return [r.no,r.first,r.last,r.cls,r.room,r.status,r.score,r.a,r.b,r.c,r.d,r.repairs||0,r.repairsDone||0,String(r.repairScores||'').split(',').join(' '),r.final,r.secs?(r.secs/60).toFixed(1):'',r.violations].concat(X.items.map(it=>{ const d=det.find(x=>x.id===it.id); return d?(d.ok?1:0):''; })); }))
     .map(a=>a.map(csvCell).join(','));
   const blob=new Blob(['﻿'+lines.join('\n')],{type:'text/csv;charset=utf-8'}), a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download='HelloQuest_ScoreTest.csv'; document.body.appendChild(a); a.click(); a.remove();
+  a.href=URL.createObjectURL(blob); a.download='HelloQuest_ScoreTest_'+X.range.replace('–','-')+'.csv'; document.body.appendChild(a); a.click(); a.remove();
 }
 function exAdminTab(tab){
   document.querySelectorAll('#admTabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
   $('admQuest').classList.toggle('hidden',tab!=='quest'); $('admExam').classList.toggle('hidden',tab!=='exam');
-  ADMIN.tab=tab; if(tab==='exam') exLoadAdmin(); else loadAdmin();
+  ADMIN.tab=tab; if(tab==='exam'){ exDrawSettings(); exLoadAdmin(); } else loadAdmin();
 }
 
 /* ---------------- Wiring ---------------- */
@@ -1619,7 +1874,7 @@ function init(){
   $('btnCardBack').onclick=renderHub;
   $('btnSavePng').onclick=savePNG;
   $('btnLogout').onclick=()=>{ if($('btnLogout').dataset.c!=='1'){ $('btnLogout').dataset.c='1'; $('btnLogout').textContent='กดอีกครั้งเพื่อยืนยัน'; setTimeout(()=>{$('btnLogout').dataset.c='';$('btnLogout').textContent='ออกจากระบบ'},3000); return; }
-    unstore(SKEY); S=null; EXSYNC=false; clearInterval(exTickT); $('vioPill').classList.add('hidden'); ['fFirst','fLast'].forEach(i=>$(i).value=''); ['fClass','fRoom','fNo'].forEach(i=>$(i).value=''); $('btnLogout').dataset.c=''; $('btnLogout').textContent='ออกจากระบบ'; show('scrRegister'); };
+    unstore(SKEY); S=null; EXSYNC={}; CUR=null; clearInterval(exTickT); $('vioPill').classList.add('hidden'); ['fFirst','fLast'].forEach(i=>$(i).value=''); ['fClass','fRoom','fNo'].forEach(i=>$(i).value=''); $('btnLogout').dataset.c=''; $('btnLogout').textContent='ออกจากระบบ'; show('scrRegister'); };
   $('btnAdminFab').onclick=()=>{ location.href = location.pathname + '?admin=1'; };
   ['btnAdminBack1','btnAdminBack2'].forEach(id=>$(id).onclick=()=>{ location.href = location.pathname; });
   $('btnPin').onclick=adminLogin; $('fPin').addEventListener('keydown',e=>{ if(e.key==='Enter') adminLogin(); });
@@ -1627,12 +1882,13 @@ function init(){
   $('aCsv').onclick=exportCSV; $('aRefresh').onclick=loadAdmin; $('aSetPin').onclick=setPin;
   $('exBack').onclick=exLeave; $('btnExHub').onclick=renderHub; $('btnExPng').onclick=exSavePNG;
   document.querySelectorAll('#admTabs .tab').forEach(b=>b.onclick=()=>exAdminTab(b.dataset.tab));
-  ['xSearch','xClass','xRoom'].forEach(id=>$(id).addEventListener('input',exDrawAdmin));
+  ['xSearch','xClass','xRoom','xStatus'].forEach(id=>$(id).addEventListener('input',exDrawAdmin));
+  $('antiBack').onclick=()=>{ $('antiOverlay').classList.add('hidden'); };
   $('xItems').onclick=exItemAnalysis; $('xCsv').onclick=exExportCSV; $('xRefresh').onclick=exLoadAdmin;
 
   if(/[?&]admin=1/.test(location.search)) return show('scrAdminLogin');
   const k=store(SKEY), s=k&&store(APP_ID+':s:'+k);
-  if(s&&s.student){ S=s; if(S.violations){ $('vioPill').textContent='⚠ '+S.violations; $('vioPill').classList.remove('hidden'); } renderHub(); }
+  if(s&&s.student){ S=s; exLoadSettings().then(()=>{ if(S&&!$('scrHub').classList.contains('hidden')) exRenderCard(); }); if(S.violations){ $('vioPill').textContent='⚠ '+S.violations; $('vioPill').classList.remove('hidden'); } renderHub(); }
   else show('scrRegister');
 }
 init();
